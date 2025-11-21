@@ -50,7 +50,9 @@ export function useTotalClaims() {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch total claims';
       setError(errorMessage);
-      console.error('Error fetching total claims:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching total claims:', err);
+      }
     } finally {
       setIsLoading(false);
     }

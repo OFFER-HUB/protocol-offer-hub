@@ -19,8 +19,8 @@ export function useRecentClaims() {
       const mock: Claim[] = [
         {
           id: 1,
-          issuer: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY',
-          receiver: '5FHneW46xGXgs5mUiveU4sbTyGBzmstVj7hNwR4P3L3rZqYk',
+          issuer: 'GB6NVEN5HSUBKMYCE5ZOWSK5K23TBWRUQLZY3KNMXUZ3AQPECS2K4DMT',
+          receiver: 'GDQERENWDSIU6VU35EVI2R4PGBIOJ2CIOPKFEAAOS3M4X7XXM6MT36CK',
           claimType: 'HackathonWin' as ClaimType,
           proofHash: '0x' + 'a'.repeat(64),
           approved: true,
@@ -28,8 +28,8 @@ export function useRecentClaims() {
         },
         {
           id: 2,
-          issuer: '5DAAnrj7VHTz5hU9m6uQpZgUzZ4J2G8gT1o6RkqP2cVsgv4M',
-          receiver: '5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw',
+          issuer: 'GDRXE2BQUC3RUUCXXFQ2Z7WPOOLQBZXN5VBMWZ4CI2REH7I54UWHSU2K',
+          receiver: 'GDTYH4I4PRCXNZW5KQXKGKPN3YVFH5RZJYVX3X5RZJYVX3X5RZJYVX3X',
           claimType: 'RepoContribution' as ClaimType,
           proofHash: '0x' + 'b'.repeat(64),
           approved: false,
@@ -37,8 +37,8 @@ export function useRecentClaims() {
         },
         {
           id: 3,
-          issuer: '5FLSigC9H8N9SxwgyYJ6F1i7CwYk8GJtYk1A1q1o1o1o1o1',
-          receiver: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY',
+          issuer: 'GDUK2UGVUKZ2UGVUKZ2UGVUKZ2UGVUKZ2UGVUKZ2UGVUKZ2UGVUKZ2UG',
+          receiver: 'GB6NVEN5HSUBKMYCE5ZOWSK5K23TBWRUQLZY3KNMXUZ3AQPECS2K4DMT',
           claimType: 'JobCompleted' as ClaimType,
           proofHash: '0x' + 'c'.repeat(64),
           approved: true,

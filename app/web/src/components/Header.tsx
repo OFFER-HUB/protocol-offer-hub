@@ -2,13 +2,14 @@
  * Header component with navigation
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { WalletButton } from './WalletButton';
 
 export function Header() {
   const router = useRouter();
+  const [logoError, setLogoError] = useState(false);
 
   const isActive = (path: string) => {
     return router.pathname === path;
@@ -19,10 +20,28 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Skill<span className="text-primary-600">Chain</span>
-            </h1>
+          <Link href="/" className="flex items-center space-x-3">
+            {!logoError ? (
+              <>
+                <img
+                  src="/offer_hub_logo.png"
+                  alt="OFFER-HUB"
+                  width={160}
+                  height={40}
+                  className="h-12 w-auto"
+                  onError={() => setLogoError(true)}
+                />
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-base font-bold text-gray-900 leading-tight">OFFER-HUB</span>
+                  <span className="text-base font-bold text-primary-600 leading-tight -mt-0.5">PROTOCOL</span>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col items-start leading-tight">
+                <span className="text-base font-bold text-gray-900 leading-tight">OFFER-HUB</span>
+                <span className="text-base font-bold text-primary-600 leading-tight -mt-0.5">PROTOCOL</span>
+              </div>
+            )}
           </Link>
 
           {/* Navigation */}

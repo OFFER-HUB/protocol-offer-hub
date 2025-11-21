@@ -47,7 +47,9 @@ export function WalletProvider({ children }: WalletProviderProps) {
         }
       }
     } catch (error) {
-      console.error('Failed to connect wallet:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to connect wallet:', error);
+      }
     } finally {
       setIsConnecting(false);
     }

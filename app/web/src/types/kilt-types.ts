@@ -40,17 +40,17 @@ export interface KiltClient {
     attester?: string;
     error?: string;
   }>;
-  linkDidToProfile(did: string, skillchainClient: any, signerAddress: string): Promise<{ success: boolean; error?: string }>;
-  getDidFromAccount(accountId: string, skillchainClient: any): Promise<string | null>;
+  linkDidToProfile(did: string, offerHubClient: any, signerAddress: string): Promise<{ success: boolean; error?: string }>;
+  getDidFromAccount(accountId: string, offerHubClient: any): Promise<string | null>;
   resolveDid(did: string): Promise<any>;
   connect(): Promise<void>;
   disconnect(): Promise<void>;
 }
 
 /**
- * Minimal SkillChainClient interface for component props
+ * Minimal OfferHubClient interface for component props
  */
-export interface SkillChainClient {
+export interface OfferHubClient {
   linkDid(did: string, signerAddress?: string): Promise<TransactionResult>;
   getDid(accountId: string): Promise<string | null>;
 }
@@ -101,12 +101,12 @@ export interface KiltHookReturn {
   createLightDid: (options?: CreateDidOptions) => Promise<void>;
   resolveCurrentDid: () => Promise<void>;
   linkDidToProfile: (
-    skillchainClient: SkillChainClient,
+    offerHubClient: OfferHubClient,
     signerAddress?: string
   ) => Promise<void>;
   getDidFromAccount: (
     accountId: string,
-    skillchainClient: SkillChainClient
+    offerHubClient: OfferHubClient
   ) => Promise<string | null>;
   verifyCredential: (credential: unknown) => Promise<{
     valid: boolean;

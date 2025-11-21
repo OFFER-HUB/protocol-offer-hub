@@ -7,12 +7,12 @@ import { LinkedDidCard } from '@/components/my-profile/linked-did-card';
 import { CredentialVerifier } from '@/components/my-profile/credential-verifier';
 import { ErrorAlert } from '@/components/ErrorAlert';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { useSkillchainProfile } from '@/hooks/use-skillchain-profile';
+import { useOfferHubProfile } from '@/hooks/use-skillchain-profile';
 
 export default function ProfilePage() {
   const { isConnected: walletConnected, connect: connectWallet, publicKey } = useWallet();
   const { state, connect, createLightDid, resolveCurrentDid, linkDidToProfile, getDidFromAccount, verifyCredential } = useKiltProfile();
-  const skillchain = useSkillchainProfile();
+  const offerHub = useOfferHubProfile();
   const [isRefreshingLinked, setIsRefreshingLinked] = React.useState(false);
   const [linkedDid, setLinkedDid] = React.useState<string | null>(null);
   const [linkError, setLinkError] = React.useState<string | null>(null);
@@ -26,7 +26,7 @@ export default function ProfilePage() {
       <div className="container mx-auto px-4 py-10 space-y-8">
         {!walletConnected && (
           <div className="max-w-2xl mx-auto">
-            <ErrorAlert message="Connect your Polkadot wallet to continue." />
+            <ErrorAlert message="Connect your Stellar wallet to continue." />
             <div className="mt-4">
               <button
                 className="inline-flex items-center px-4 py-2 rounded-md bg-gray-900 text-white hover:bg-gray-800"
@@ -57,14 +57,14 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
           <LinkedDidCard
             onChainDid={linkedDid}
-            isReady={skillchain.isReady}
-            error={skillchain.contractError || null}
+            isReady={offerHub.isReady}
+            error={offerHub.contractError || null}
             isRefreshing={isRefreshingLinked}
             onRefresh={async () => {
               if (!publicKey) return;
               setIsRefreshingLinked(true);
               try {
-                const did = await getDidFromAccount(publicKey, { linkDid: skillchain.linkDid, getDid: skillchain.getDid });
+                const did = await getDidFromAccount(publicKey, { linkDid: offerHub.linkDid, getDid: offerHub.getDid });
                 setLinkedDid(did);
               } finally {
                 setIsRefreshingLinked(false);
@@ -75,10 +75,10 @@ export default function ProfilePage() {
                 ? async () => {
                     setLinkError(null);
                     try {
-                      await linkDidToProfile({ linkDid: skillchain.linkDid, getDid: skillchain.getDid }, publicKey || undefined);
+                      await linkDidToProfile({ linkDid: offerHub.linkDid, getDid: offerHub.getDid }, publicKey || undefined);
                       // refresh after link
                       if (publicKey) {
-                        const did = await getDidFromAccount(publicKey, { linkDid: skillchain.linkDid, getDid: skillchain.getDid });
+                        const did = await getDidFromAccount(publicKey, { linkDid: offerHub.linkDid, getDid: offerHub.getDid });
                         setLinkedDid(did);
                       }
                     } catch (e: any) {

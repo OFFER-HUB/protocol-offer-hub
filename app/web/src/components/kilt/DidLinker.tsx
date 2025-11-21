@@ -1,12 +1,12 @@
 /**
- * DidLinker - Component to link a KILT DID to a SkillChain profile
+ * DidLinker - Component to link a KILT DID to a OFFER-HUB PROTOCOL profile
  */
 
 import React, { useState } from 'react';
-import type { SkillChainClient, TransactionResult } from '@/types/kilt-types';
+import type { OfferHubClient, TransactionResult } from '@/types/kilt-types';
 
 interface DidLinkerProps {
-  skillchainClient: SkillChainClient;
+  offerHubClient: OfferHubClient;
   signerAddress: string;
   currentDid?: string | null;
   onLinked?: (did: string) => void;
@@ -14,7 +14,7 @@ interface DidLinkerProps {
 }
 
 export const DidLinker: React.FC<DidLinkerProps> = ({
-  skillchainClient,
+  offerHubClient,
   signerAddress,
   currentDid,
   onLinked,
@@ -41,7 +41,7 @@ export const DidLinker: React.FC<DidLinkerProps> = ({
     setSuccess(false);
 
     try {
-      const result: TransactionResult = await skillchainClient.linkDid(did, signerAddress);
+      const result: TransactionResult = await offerHubClient.linkDid(did, signerAddress);
 
       if (result.success) {
         setSuccess(true);

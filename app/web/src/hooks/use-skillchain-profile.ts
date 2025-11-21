@@ -1,6 +1,6 @@
 /**
- * Hook: use-skillchain-profile
- * - Adapter minimal para invocar el contrato SkillChain desde el UI
+ * Hook: use-offer-hub-profile
+ * - Adapter minimal para invocar el contrato OFFER-HUB PROTOCOL desde el UI
  * - Expone métodos esperados por el SDK KILT (linkDid, getDid)
  */
 
@@ -13,7 +13,7 @@ interface LinkResult {
   error?: string;
 }
 
-export function useSkillchainProfile() {
+export function useOfferHubProfile() {
   const { contract, isReady, error: contractError } = useContract();
   const { publicKey } = useWallet();
   
@@ -43,9 +43,9 @@ export function useSkillchainProfile() {
                 // Decode module error if possible
                 let errMsg = result.dispatchError.toString();
                 try {
-                  // @ts-ignore - Polkadot API types
+                  // @ts-ignore - Stellar API types
                   if ((result.dispatchError as any).isModule) {
-                    // @ts-ignore - Polkadot API types
+                    // @ts-ignore - Stellar API types
                     const metaError = (api as any).registry.findMetaError((result.dispatchError as any).asModule);
                     errMsg = `${metaError.section}.${metaError.name}: ${metaError.docs?.join(' ') || ''}`;
                   }

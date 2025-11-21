@@ -24,7 +24,9 @@ export function useContract(): UseContractReturn {
     if (!isConnected) throw new Error('Wallet not connected');
     
     // TODO: Implement Soroban invocation
-    console.log(`Invoking ${method} with args:`, args);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Invoking ${method} with args:`, args);
+    }
     return null;
   }, [isConnected]);
 

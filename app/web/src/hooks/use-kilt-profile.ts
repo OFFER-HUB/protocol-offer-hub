@@ -73,20 +73,20 @@ export function useKiltProfile() {
   }, [state.identity.did]);
 
   const linkDidToProfile = useCallback(async (
-    skillchain: { linkDid: (did: string, address?: string) => Promise<any>, getDid: (address: string) => Promise<string | null> },
+    offerHub: { linkDid: (did: string, address?: string) => Promise<any>, getDid: (address: string) => Promise<string | null> },
     address?: string
   ) => {
     if (!state.identity.did) throw new Error('No DID to link');
     // TODO: Implement DID linking
-    await skillchain.linkDid(state.identity.did, address);
+    await offerHub.linkDid(state.identity.did, address);
   }, [state.identity.did]);
 
   const getDidFromAccount = useCallback(async (
     address: string,
-    skillchain: { linkDid: (did: string, address?: string) => Promise<any>, getDid: (address: string) => Promise<string | null> }
+    offerHub: { linkDid: (did: string, address?: string) => Promise<any>, getDid: (address: string) => Promise<string | null> }
   ): Promise<string | null> => {
     // TODO: Implement account DID retrieval
-    return await skillchain.getDid(address);
+    return await offerHub.getDid(address);
   }, []);
 
   const verifyCredential = useCallback(async (credential: any) => {

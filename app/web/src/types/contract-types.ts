@@ -181,7 +181,7 @@ export function validateDid(did: string): void {
     throw new Error('DID debe tener al menos 10 caracteres');
   }
   // Opcional: validar formato did:kilt:
-  if (!did.startsWith('did:')) {
+  if (!did.startsWith('did:') && process.env.NODE_ENV === 'development') {
     console.warn('DID no sigue el formato estándar (did:...)');
   }
 }

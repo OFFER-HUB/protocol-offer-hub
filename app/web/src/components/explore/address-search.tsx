@@ -37,7 +37,7 @@ export function AddressSearch({ onSearch, loading = false, initialAddress = '' }
             type="text"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            placeholder="Enter Polkadot address (e.g., 5GrwvaEF5...)"
+            placeholder="Enter Stellar address (e.g., GB6NVEN5H...)"
             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent ${address && !isValid ? 'border-red-400' : 'border-gray-300'}`}
             aria-invalid={!!address && !isValid}
             aria-describedby="address-help"
@@ -53,7 +53,7 @@ export function AddressSearch({ onSearch, loading = false, initialAddress = '' }
         </div>
 
         <p id="address-help" className={`text-sm text-center ${address && !isValid ? 'text-red-600' : 'text-gray-500'}`}>
-          {address && !isValid ? 'Invalid Polkadot SS58 address' : 'Enter a Polkadot address to search'}
+          {address && !isValid ? 'Invalid Stellar address' : 'Enter a Stellar address to search'}
         </p>
       </div>
     </form>
