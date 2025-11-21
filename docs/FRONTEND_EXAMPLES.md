@@ -23,13 +23,13 @@ import type {
   validateProofHash,
 } from '@/types/contract-types';
 
-// Configurar RPC
+// Configurar RPC (Testnet)
 const rpc = new SorobanRpc.Server('https://soroban-testnet.stellar.org', {
   allowHttp: true,
 });
 
-// ID del contrato desplegado
-const CONTRACT_ID = 'C...'; // Reemplazar con el ID real
+// ID del contrato desplegado (Testnet)
+const CONTRACT_ID = 'CBWZZEF73NLFP24M2LPRF5JXWOPINYPUVPDF2UTAZUS3YFZ6OG7OVR4V';
 
 // Crear instancia del contrato
 const contract = new Contract(CONTRACT_ID);

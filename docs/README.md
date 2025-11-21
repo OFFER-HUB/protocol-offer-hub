@@ -11,6 +11,11 @@ Welcome to the Protocol Offer Hub protocol documentation, powered by **Stellar S
 5. [Deployment Guide](#deployment-guide)
 6. [Development Setup](#development-setup)
 
+**Documentación Adicional:**
+- [Contratos Desplegados](./CONTRACTS.md) - Info de contratos deployados
+- [API del Contrato](./CONTRACT_API.md) - Funciones y tipos
+- [Ejemplos Frontend](./FRONTEND_EXAMPLES.md) - Ejemplos de integración
+
 ## Architecture Overview
 
 Protocol Offer Hub is a decentralized professional reputation protocol built on **Stellar**. The architecture consists of three main components:
@@ -51,7 +56,11 @@ Protocol Offer Hub is a decentralized professional reputation protocol built on 
 
 ### Contract: ProtocolOfferHubRegistry
 
-Location: `contracts/`
+Location: `contracts/offer-hub/`
+
+**Deployed Contract (Testnet):**
+- Contract ID: `CBWZZEF73NLFP24M2LPRF5JXWOPINYPUVPDF2UTAZUS3YFZ6OG7OVR4V`
+- Alias: `offer-hub`
 
 #### Core Functions (Soroban)
 
@@ -102,9 +111,13 @@ pub enum ClaimType {
 ### Building the Contract
 
 ```bash
-cd contracts/
-soroban contract build
+cd contracts/offer-hub
+stellar contract build
+# O usando Makefile:
+make build
 ```
+
+**Output:** `target/wasm32v1-none/release/offer_hub.wasm`
 
 ### Testing the Contract
 
@@ -193,22 +206,65 @@ Open http://localhost:3000
 
 ## Deployment Guide
 
+### Contratos Desplegados
+
+#### Testnet (Stellar Testnet)
+
+- **Contract ID**: `CBWZZEF73NLFP24M2LPRF5JXWOPINYPUVPDF2UTAZUS3YFZ6OG7OVR4V`
+- **Alias**: `offer-hub`
+- **Network**: Testnet (Test SDF Network ; September 2015)
+- **RPC URL**: `https://soroban-testnet.stellar.org`
+- **Explorer**: https://stellar.expert/explorer/testnet/contract/CBWZZEF73NLFP24M2LPRF5JXWOPINYPUVPDF2UTAZUS3YFZ6OG7OVR4V
+- **Wasm Hash**: `a8e69c26b629bd29832828ab49dd88ad4d65b7a883635a3196923bee1addf93a`
+- **Deployer**: `GBMTZAVSCGUS4EJG72AMNYHRCRS3INCSDOPAICTX3RD5REOV657N7UPE`
+- **Fecha de Deploy**: 2025-01-20
+
+**Uso en código:**
+```typescript
+const CONTRACT_ID = 'CBWZZEF73NLFP24M2LPRF5JXWOPINYPUVPDF2UTAZUS3YFZ6OG7OVR4V';
+const rpcUrl = 'https://soroban-testnet.stellar.org';
+```
+
 ### 1. Deploy Smart Contract
 
-#### Using Soroban CLI
+#### Using Stellar CLI
 
 ```bash
-# 1. Configure identity
-soroban config identity generate alice
+# 1. Configurar red
+cd contracts/offer-hub
+stellar network use testnet
 
-# 2. Build
-soroban contract build
+# 2. Crear identidad (si no existe)
+stellar keys generate alice --network testnet --fund
 
-# 3. Deploy
-soroban contract deploy \
-    --wasm target/wasm32-unknown-unknown/release/protocol-offer-hub.wasm \
+# 3. Compilar
+stellar contract build
+# O usando Makefile:
+make build
+
+# 4. Deploy
+stellar contract deploy \
+    --wasm target/wasm32v1-none/release/offer_hub.wasm \
+    --source-account alice \
+    --network testnet \
+    --alias offer-hub
+```
+
+#### Deploy en 2 pasos (upload + deploy)
+
+```bash
+# 1. Subir Wasm
+stellar contract upload \
     --source alice \
-    --network futurenet
+    --network testnet \
+    --wasm target/wasm32v1-none/release/offer_hub.wasm
+
+# 2. Deploy usando hash
+stellar contract deploy \
+    --source alice \
+    --network testnet \
+    --wasm-hash <hex-encoded-wasm-hash> \
+    --alias offer-hub
 ```
 
 ### 2. Deploy Frontend
@@ -296,6 +352,14 @@ docker run --rm -it \
 - RPC: `http://localhost:8000/soroban/rpc`
 - Network Passphrase: `Standalone Network ; February 2017`
 - Friendbot: `http://localhost:8000/friendbot`
+
+### Testnet (Deployed)
+
+- RPC: `https://soroban-testnet.stellar.org`
+- Network Passphrase: `Test SDF Network ; September 2015`
+- Friendbot: `https://friendbot.stellar.org`
+- **Contract ID**: `CBWZZEF73NLFP24M2LPRF5JXWOPINYPUVPDF2UTAZUS3YFZ6OG7OVR4V`
+- **Explorer**: https://stellar.expert/explorer/testnet/contract/CBWZZEF73NLFP24M2LPRF5JXWOPINYPUVPDF2UTAZUS3YFZ6OG7OVR4V
 
 ### Futurenet
 

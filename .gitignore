@@ -37,3 +37,6 @@ coverage/
 # Misc
 *.log
 .turbo
+
+# Stellar CLI identities (contains private keys)
+~/.config/stellar/identity/
