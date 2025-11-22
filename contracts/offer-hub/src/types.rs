@@ -1,4 +1,12 @@
-use soroban_sdk::{contracttype, Address, BytesN, String};
+use soroban_sdk::{contracttype, Address, BytesN, String, Symbol, Vec};
+
+/// Linked account (e.g. GitHub, LinkedIn)
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LinkedAccount {
+    pub platform: Symbol,
+    pub handle: String,
+}
 
 /// User profile with optional DID
 #[contracttype]
@@ -7,6 +15,11 @@ pub struct Profile {
     pub owner: Address,
     pub metadata_uri: String,
     pub did: Option<String>,
+    pub display_name: String,
+    pub country_code: Option<Symbol>,
+    pub email_hash: Option<BytesN<32>>,
+    pub linked_accounts: Vec<LinkedAccount>,
+    pub joined_at: u64,
 }
 
 /// Status of a claim

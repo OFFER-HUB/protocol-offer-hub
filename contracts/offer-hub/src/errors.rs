@@ -11,15 +11,9 @@ pub enum Error {
     ProfileNotFound = 2,
     /// Claim not found
     ClaimNotFound = 3,
-    /// Unauthorized approval attempt
-    UnauthorizedApproval = 4,
-    /// Claim already approved
-    ClaimAlreadyApproved = 5,
     /// Invalid DID format
     InvalidDid = 6,
     /// Invalid metadata URI
     InvalidMetadataUri = 7,
-    /// Claim already rejected
-    ClaimAlreadyRejected = 8,
 }
 

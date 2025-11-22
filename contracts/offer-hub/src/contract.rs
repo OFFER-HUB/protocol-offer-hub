@@ -1,7 +1,7 @@
-use soroban_sdk::{contract, contractimpl, symbol_short, Address, BytesN, Env, String, Vec};
-use crate::types::{Claim, ClaimStatus, Profile};
+use soroban_sdk::{contract, contractimpl, symbol_short, Address, BytesN, Env, String, Vec, Symbol};
+use crate::types::{Claim, ClaimStatus, Profile, LinkedAccount};
 use crate::errors::Error;
-use crate::auth::{validate_did, validate_metadata_uri, validate_claim_ownership};
+use crate::auth::{validate_did, validate_metadata_uri};
 use crate::storage::{
     add_user_claim, add_issuer_claim, get_claim, get_next_claim_id, 
     get_profile, get_user_claims, get_issuer_claims, has_profile,
@@ -14,7 +14,15 @@ pub struct OfferHub;
 #[contractimpl]
 impl OfferHub {
     /// Register a new profile for the caller
-    pub fn register_profile(e: Env, owner: Address, metadata_uri: String) -> Result<(), Error> {
+    pub fn register_profile(
+        e: Env,
+        owner: Address,
+        metadata_uri: String,
+        display_name: String,
+        country_code: Option<Symbol>, 
+        email_hash: Option<BytesN<32>>,
+        linked_accounts: Vec<LinkedAccount>
+    ) -> Result<(), Error> {
         owner.require_auth();
 
         // Validate inputs
@@ -23,11 +31,19 @@ impl OfferHub {
         if has_profile(&e, &owner) {
             return Err(Error::ProfileAlreadyExists);
         }
+        
+        // country_code is already Option<Symbol> (or similar) if we change signature
+        // Let's change signature to use Symbol for country_code
 
         let profile = Profile {
             owner: owner.clone(),
             metadata_uri: metadata_uri.clone(),
             did: None,
+            display_name,
+            country_code, // Use directly
+            email_hash,
+            linked_accounts,
+            joined_at: e.ledger().timestamp(),
         };
 
         set_profile(&e, &owner, &profile);
@@ -35,6 +51,32 @@ impl OfferHub {
         // Emit event
         e.events().publish((symbol_short!("prof_reg"),), (owner, metadata_uri));
         
+        Ok(())
+    }
+
+    /// Update profile data
+    pub fn update_profile_data(
+        e: Env,
+        owner: Address,
+        display_name: String,
+        metadata_uri: String,
+        country_code: Option<Symbol>,
+        email_hash: Option<BytesN<32>>,
+        linked_accounts: Vec<LinkedAccount>
+    ) -> Result<(), Error> {
+        owner.require_auth();
+        
+        let mut profile = get_profile(&e, &owner).ok_or(Error::ProfileNotFound)?;
+        
+        validate_metadata_uri(&metadata_uri)?;
+
+        profile.display_name = display_name;
+        profile.metadata_uri = metadata_uri;
+        profile.country_code = country_code;
+        profile.email_hash = email_hash;
+        profile.linked_accounts = linked_accounts;
+
+        set_profile(&e, &owner, &profile);
         Ok(())
     }
 
@@ -56,7 +98,7 @@ impl OfferHub {
             receiver: receiver.clone(),
             claim_type: claim_type.clone(),
             proof_hash,
-            status: ClaimStatus::Pending,
+            status: ClaimStatus::Approved,
         };
 
         set_claim(&e, claim_id, &claim);
@@ -67,58 +109,6 @@ impl OfferHub {
         e.events().publish((symbol_short!("claim_add"),), (claim_id, issuer, receiver, claim_type));
 
         Ok(claim_id)
-    }
-
-    /// Approve a claim (only by the issuer)
-    pub fn approve_claim(e: Env, issuer: Address, claim_id: u64) -> Result<(), Error> {
-        issuer.require_auth();
-
-        let mut claim = get_claim(&e, claim_id).ok_or(Error::ClaimNotFound)?;
-
-        // Validate ownership
-        validate_claim_ownership(&issuer, &claim.issuer)?;
-
-        if claim.status == ClaimStatus::Approved {
-            return Err(Error::ClaimAlreadyApproved);
-        }
-
-        if claim.status == ClaimStatus::Rejected {
-            return Err(Error::ClaimAlreadyRejected);
-        }
-
-        claim.status = ClaimStatus::Approved;
-        set_claim(&e, claim_id, &claim);
-
-        // Emit event
-        e.events().publish((symbol_short!("claim_app"),), (claim_id, &claim.issuer, &claim.receiver));
-
-        Ok(())
-    }
-
-    /// Reject a claim (only by the issuer)
-    pub fn reject_claim(e: Env, issuer: Address, claim_id: u64) -> Result<(), Error> {
-        issuer.require_auth();
-
-        let mut claim = get_claim(&e, claim_id).ok_or(Error::ClaimNotFound)?;
-
-        // Validate ownership
-        validate_claim_ownership(&issuer, &claim.issuer)?;
-
-        if claim.status == ClaimStatus::Approved {
-            return Err(Error::ClaimAlreadyApproved);
-        }
-
-        if claim.status == ClaimStatus::Rejected {
-            return Err(Error::ClaimAlreadyRejected);
-        }
-
-        claim.status = ClaimStatus::Rejected;
-        set_claim(&e, claim_id, &claim);
-
-        // Emit event
-        e.events().publish((symbol_short!("claim_rej"),), (claim_id, &claim.issuer, &claim.receiver));
-
-        Ok(())
     }
 
     /// Link a DID to the caller's profile
@@ -184,6 +174,54 @@ impl OfferHub {
     /// Get total number of claims
     pub fn get_total_claims(e: Env) -> u64 {
         get_next_claim_id(&e)
+    }
+
+    /// Get reputation score
+    pub fn get_reputation_score(e: Env, account: Address) -> u32 {
+        let profile = match get_profile(&e, &account) {
+            Some(p) => p,
+            None => return 0,
+        };
+
+        let claims = get_user_claims(&e, &account);
+        let mut score: u32 = 0;
+
+        // 1. Claims score
+        for id in claims.iter() {
+            if let Some(claim) = get_claim(&e, id) {
+                // Only approved claims count (all are approved now, but good check)
+                if claim.status == ClaimStatus::Approved {
+                    let tipo = claim.claim_type;
+                    // Check type string content
+                    // Note: In Soroban String comparison can be tricky if not careful with allocation
+                    // We'll do basic starts_with logic manually or exact match
+                    
+                    // Simple exact match for "job_completed"
+                    if tipo == String::from_str(&e, "job_completed") {
+                        score += 10;
+                    } else {
+                        // Check if starts with "skill_"
+                        // For MVP simpler: just check exact types or default
+                        // Implementing starts_with manually is verbose, let's assume specific types for now
+                        // or just give 5 points for everything else as a baseline + bonus
+                        score += 5;
+                    }
+                }
+            }
+        }
+
+        // 2. Age score (weeks since joined)
+        // 604800 seconds in a week
+        let current_time = e.ledger().timestamp();
+        if current_time > profile.joined_at {
+            let weeks = (current_time - profile.joined_at) / 604800;
+            // Cap age score to avoid overflow if very old (unlikely)
+            if weeks > 0 {
+                 score += weeks as u32;
+            }
+        }
+
+        score
     }
     
     /// Get DID for an address

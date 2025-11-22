@@ -1,4 +1,4 @@
-use soroban_sdk::{Address, String};
+use soroban_sdk::String;
 use crate::errors::Error;
 
 /// Validates that a DID has the correct format
@@ -18,14 +18,6 @@ pub fn validate_did(did: &String) -> Result<(), Error> {
 pub fn validate_metadata_uri(uri: &String) -> Result<(), Error> {
     if uri.len() == 0 || uri.len() > 256 {
         return Err(Error::InvalidMetadataUri);
-    }
-    Ok(())
-}
-
-/// Validates that issuer owns the claim
-pub fn validate_claim_ownership(issuer: &Address, claim_issuer: &Address) -> Result<(), Error> {
-    if issuer != claim_issuer {
-        return Err(Error::UnauthorizedApproval);
     }
     Ok(())
 }
