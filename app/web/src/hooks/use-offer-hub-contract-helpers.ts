@@ -10,15 +10,14 @@ export function scValToAddress(val: xdr.ScVal): string {
 }
 
 export function parseProfile(val: xdr.ScVal | undefined): Profile {
-  if (!val) return { owner: '', metadata_uri: '', did: null, display_name: '', country_code: null, email_hash: null, linked_accounts: [], joined_at: 0 };
+  if (!val) return { owner: '', metadata_uri: '', display_name: '', country_code: null, email_hash: null, linked_accounts: [], joined_at: 0 };
   
   const native = scValToNative(val);
-  if (!native) return { owner: '', metadata_uri: '', did: null, display_name: '', country_code: null, email_hash: null, linked_accounts: [], joined_at: 0 };
+  if (!native) return { owner: '', metadata_uri: '', display_name: '', country_code: null, email_hash: null, linked_accounts: [], joined_at: 0 };
 
   return {
     owner: native.owner || '',
     metadata_uri: native.metadata_uri?.toString() || '',
-    did: native.did ? native.did.toString() : null,
     display_name: native.display_name?.toString() || '',
     country_code: native.country_code?.toString() || null,
     email_hash: native.email_hash instanceof Uint8Array ? native.email_hash : null,
