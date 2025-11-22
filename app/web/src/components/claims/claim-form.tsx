@@ -2,9 +2,10 @@
  * Form to create a new claim (layout adjusted, no color changes)
  */
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { ClaimType } from '@/types/claim-types';
 import { useAddressValidation } from '@/hooks/use-address-validation';
+import { ReceiverPreview } from './receiver-preview';
 
 interface ClaimFormProps {
   onSubmit: (data: { receiver: string; claimType: ClaimType; proofHash: string }) => Promise<void> | void;
@@ -19,6 +20,12 @@ export function ClaimForm({ onSubmit, submitting = false, error, initialReceiver
   const [receiver, setReceiver] = useState(initialReceiver);
   const [claimType, setClaimType] = useState<ClaimType>(ClaimType.JobCompleted);
   const [proofHash, setProofHash] = useState('');
+
+  useEffect(() => {
+    if (initialReceiver) {
+      setReceiver(initialReceiver);
+    }
+  }, [initialReceiver]);
 
   const isValidAddress = useAddressValidation(receiver);
   const isValidHash = proofHash.startsWith('0x') && proofHash.length === 66;
@@ -45,6 +52,11 @@ export function ClaimForm({ onSubmit, submitting = false, error, initialReceiver
           <p className={`mt-1 text-xs ${receiver && !isValidAddress ? 'text-red-600' : 'text-gray-500'}`}>
             {receiver && !isValidAddress ? 'Invalid Stellar address' : 'Paste a valid Stellar address'}
           </p>
+          {receiver && isValidAddress && (
+            <div className="mt-3">
+              <ReceiverPreview receiverAddress={receiver} />
+            </div>
+          )}
         </div>
 
         <div>

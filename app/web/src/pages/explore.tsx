@@ -1,18 +1,20 @@
 /**
- * Explore page - centered with extra spacing between heading/description and search
+ * Explore page - search and view profiles with reputation scores
  */
 
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { AddressSearch } from '@/components/explore/address-search';
-import { useExploreProfileMock } from '@/hooks/use-explore-profile-mock';
-import { ProfileSummary } from '@/components/explore/profile-summary';
+import { useExploreProfile } from '@/hooks/use-explore-profile';
+import { ProfileSummaryReal } from '@/components/explore/profile-summary-real';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ErrorAlert } from '@/components/ErrorAlert';
 
 export default function Explore() {
   const router = useRouter();
   const [searchAddress, setSearchAddress] = useState<string | null>(null);
-  const { isLoading, error, profile } = useExploreProfileMock(searchAddress);
+  const { isLoading, error, profile } = useExploreProfile(searchAddress);
 
   useEffect(() => {
     const a = (router.query.address as string) || null;
@@ -33,50 +35,61 @@ export default function Explore() {
       </Head>
       <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
         <div className="container mx-auto px-4 py-16">
-          {/* Vertically centered content block */}
-          <div className="max-w-4xl mx-auto text-center min-h-[60vh] flex flex-col items-center justify-center gap-8">
-            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900">
-              Explore Profiles
-            </h1>
-            <p className="text-gray-600 mt-3">
-              Search for profiles by Stellar address and view their claims
-            </p>
+          <div className="max-w-4xl mx-auto space-y-8">
+            <div className="text-center">
+              <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900">
+                Explore Profiles
+              </h1>
+              <p className="text-gray-600 mt-3">
+                Search for profiles by Stellar address and view their reputation
+              </p>
+            </div>
 
             {/* Search form */}
-            <AddressSearch
-              onSearch={handleSearch}
-              loading={isLoading}
-              initialAddress={searchAddress || ''}
-            />
+            <div className="flex justify-center">
+              <div className="w-full max-w-2xl">
+                <AddressSearch
+                  onSearch={handleSearch}
+                  loading={isLoading}
+                  initialAddress={searchAddress || ''}
+                />
+              </div>
+            </div>
 
             {/* Empty state */}
             {!searchAddress && (
-              <div className="bg-white rounded-lg shadow-md p-8 text-center w-full">
+              <div className="bg-white rounded-lg shadow-md p-8 text-center">
                 <p className="text-gray-600">
                   Enter a Stellar address above to search for profiles and claims.
                 </p>
               </div>
             )}
 
-            {/* Search results (mock) */}
+            {/* Search results */}
             {searchAddress && (
-              <div className="w-full space-y-4">
+              <div className="w-full">
                 {isLoading && (
-                  <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                    <p className="text-gray-600">Searching profile...</p>
-                  </div>
-                )}
-                {!isLoading && !profile && !error && (
-                  <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                    <p className="text-gray-600">No profile found for this address.</p>
+                  <div className="bg-white rounded-lg shadow-md p-12 text-center">
+                    <LoadingSpinner size="lg" />
+                    <p className="text-gray-600 mt-4">Loading profile...</p>
                   </div>
                 )}
                 {!isLoading && error && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-800 text-sm text-left">
-                    {error}
+                  <div className="bg-white rounded-lg shadow-md p-6">
+                    <ErrorAlert message={error} />
                   </div>
                 )}
-                {!isLoading && profile && <ProfileSummary profile={profile} />}
+                {!isLoading && !profile && !error && (
+                  <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                    <p className="text-gray-600 mb-2">No profile found for this address.</p>
+                    <p className="text-sm text-gray-500">
+                      The address may not have registered a profile yet.
+                    </p>
+                  </div>
+                )}
+                {!isLoading && profile && searchAddress && (
+                  <ProfileSummaryReal profile={profile} address={searchAddress} />
+                )}
               </div>
             )}
           </div>
