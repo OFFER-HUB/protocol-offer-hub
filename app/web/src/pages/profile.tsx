@@ -7,12 +7,12 @@ import { LinkedDidCard } from '@/components/my-profile/linked-did-card';
 import { CredentialVerifier } from '@/components/my-profile/credential-verifier';
 import { ErrorAlert } from '@/components/ErrorAlert';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { useOfferHubProfile } from '@/hooks/use-skillchain-profile';
+import { useSkillchainProfile } from '@/hooks/use-skillchain-profile';
 
 export default function ProfilePage() {
   const { isConnected: walletConnected, connect: connectWallet, publicKey } = useWallet();
   const { state, connect, createLightDid, resolveCurrentDid, linkDidToProfile, getDidFromAccount, verifyCredential } = useKiltProfile();
-  const offerHub = useOfferHubProfile();
+  const offerHub = useSkillchainProfile();
   const [isRefreshingLinked, setIsRefreshingLinked] = React.useState(false);
   const [linkedDid, setLinkedDid] = React.useState<string | null>(null);
   const [linkError, setLinkError] = React.useState<string | null>(null);
