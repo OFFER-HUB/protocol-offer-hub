@@ -14,7 +14,10 @@ export default function TestContractPage() {
     getProfile,
     getReputationScore,
     getTotalClaims,
-    updateProfileData
+    updateProfileData,
+    getUserClaims,
+    getIssuerClaims,
+    getClaim
   } = useOfferHubContract();
 
   // State for registration inputs
@@ -33,11 +36,17 @@ export default function TestContractPage() {
   
   // State for query inputs
   const [profileToQuery, setProfileToQuery] = useState('');
+  const [userClaimsAddress, setUserClaimsAddress] = useState('');
+  const [issuerClaimsAddress, setIssuerClaimsAddress] = useState('');
+  const [claimIdToQuery, setClaimIdToQuery] = useState('');
   
   // State for outputs
   const [logs, setLogs] = useState<string[]>([]);
   const [totalClaims, setTotalClaims] = useState<number | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [userClaimsResult, setUserClaimsResult] = useState<any[] | null>(null);
+  const [issuerClaimsResult, setIssuerClaimsResult] = useState<any[] | null>(null);
+  const [claimResult, setClaimResult] = useState<any | null>(null);
 
   const addLog = (msg: string) => setLogs(prev => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev]);
 
@@ -136,8 +145,6 @@ export default function TestContractPage() {
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
         emailHashBytes = new Uint8Array(hashBuffer);
       }
-      
-      // Removed invalid hook call here. updateProfileData is already available from component scope.
       
       await updateProfileData({ 
         metadata_uri: metadataUri || 'ipfs://placeholder',
@@ -260,6 +267,84 @@ export default function TestContractPage() {
       addLog(`Total claims: ${total}`);
     } catch (e: any) {
       addLog(`Error getting total: ${e.message}`);
+    }
+  };
+
+  const handleGetUserClaims = async () => {
+    try {
+      const addr = userClaimsAddress || publicKey;
+      if (!addr) {
+        addLog('Error: No address provided');
+        return;
+      }
+      
+      addLog(`Querying user claims for ${addr}...`);
+      const claims = await getUserClaims(addr);
+      setUserClaimsResult(claims);
+      addLog(`Result: Found ${claims.length} claim(s)`);
+      if (claims.length > 0) {
+        claims.forEach((claim, idx) => {
+          addLog(`  Claim ${idx + 1}: ID=${claim.id}, Type=${claim.claim_type}, Issuer=${claim.issuer.substring(0, 8)}...`);
+        });
+      }
+    } catch (e: any) {
+      addLog(`Error: ${e.message}`);
+      setUserClaimsResult(null);
+    }
+  };
+
+  const handleGetIssuerClaims = async () => {
+    try {
+      const addr = issuerClaimsAddress || publicKey;
+      if (!addr) {
+        addLog('Error: No address provided');
+        return;
+      }
+      
+      addLog(`Querying issuer claims for ${addr}...`);
+      const claims = await getIssuerClaims(addr);
+      setIssuerClaimsResult(claims);
+      addLog(`Result: Found ${claims.length} claim(s) issued`);
+      if (claims.length > 0) {
+        claims.forEach((claim, idx) => {
+          addLog(`  Claim ${idx + 1}: ID=${claim.id}, Type=${claim.claim_type}, Receiver=${claim.receiver.substring(0, 8)}...`);
+        });
+      }
+    } catch (e: any) {
+      addLog(`Error: ${e.message}`);
+      setIssuerClaimsResult(null);
+    }
+  };
+
+  const handleGetClaim = async () => {
+    try {
+      if (!claimIdToQuery) {
+        addLog('Error: Claim ID is required');
+        return;
+      }
+      
+      const claimId = parseInt(claimIdToQuery, 10);
+      if (isNaN(claimId)) {
+        addLog('Error: Invalid claim ID (must be a number)');
+        return;
+      }
+      
+      addLog(`Querying claim ID ${claimId}...`);
+      const claim = await getClaim(claimId);
+      setClaimResult(claim);
+      if (claim) {
+        addLog(`Result: Claim found`);
+        addLog(`  ID: ${claim.id}`);
+        addLog(`  Type: ${claim.claim_type}`);
+        addLog(`  Issuer: ${claim.issuer}`);
+        addLog(`  Receiver: ${claim.receiver}`);
+        addLog(`  Status: ${claim.status}`);
+      } else {
+        addLog(`Result: Claim not found`);
+      }
+    } catch (e: any) {
+      addLog(`Error: ${e.message}`);
+      setClaimResult(null);
     }
   };
 
@@ -522,6 +607,91 @@ export default function TestContractPage() {
                       </button>
                     </div>
                   </div>
+
+                  <div className="pt-4 border-t">
+                    <h3 className="font-medium mb-2">Get User Claims</h3>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={userClaimsAddress}
+                        onChange={(e) => setUserClaimsAddress(e.target.value)}
+                        placeholder="Address (defaults to self)"
+                        className="flex-1 p-2 border rounded text-sm"
+                      />
+                      <button 
+                        onClick={handleGetUserClaims}
+                        className="bg-gray-600 text-white px-3 py-2 rounded hover:bg-gray-700"
+                      >
+                        Query
+                      </button>
+                    </div>
+                    {userClaimsResult !== null && (
+                      <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
+                        <div className="font-semibold mb-1">Result: {userClaimsResult.length} claim(s)</div>
+                        {userClaimsResult.length > 0 && (
+                          <pre className="overflow-x-auto text-xs">
+                            {JSON.stringify(userClaimsResult, null, 2)}
+                          </pre>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-4 border-t">
+                    <h3 className="font-medium mb-2">Get Issuer Claims</h3>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={issuerClaimsAddress}
+                        onChange={(e) => setIssuerClaimsAddress(e.target.value)}
+                        placeholder="Address (defaults to self)"
+                        className="flex-1 p-2 border rounded text-sm"
+                      />
+                      <button 
+                        onClick={handleGetIssuerClaims}
+                        className="bg-gray-600 text-white px-3 py-2 rounded hover:bg-gray-700"
+                      >
+                        Query
+                      </button>
+                    </div>
+                    {issuerClaimsResult !== null && (
+                      <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
+                        <div className="font-semibold mb-1">Result: {issuerClaimsResult.length} claim(s)</div>
+                        {issuerClaimsResult.length > 0 && (
+                          <pre className="overflow-x-auto text-xs">
+                            {JSON.stringify(issuerClaimsResult, null, 2)}
+                          </pre>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-4 border-t">
+                    <h3 className="font-medium mb-2">Get Claim by ID</h3>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={claimIdToQuery}
+                        onChange={(e) => setClaimIdToQuery(e.target.value)}
+                        placeholder="Claim ID (number)"
+                        className="flex-1 p-2 border rounded text-sm"
+                      />
+                      <button 
+                        onClick={handleGetClaim}
+                        className="bg-gray-600 text-white px-3 py-2 rounded hover:bg-gray-700"
+                      >
+                        Query
+                      </button>
+                    </div>
+                    {claimResult !== null && (
+                      <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
+                        <div className="font-semibold mb-1">Claim Found</div>
+                        <pre className="overflow-x-auto text-xs">
+                          {JSON.stringify(claimResult, null, 2)}
+                        </pre>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -548,4 +718,3 @@ export default function TestContractPage() {
     </Layout>
   );
 }
-
