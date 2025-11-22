@@ -39,11 +39,11 @@ export function ClaimForm({ onSubmit, submitting = false, error, initialReceiver
             value={receiver}
             onChange={(e) => setReceiver(e.target.value)}
             className={`mt-1 w-full px-3 py-2 border rounded-lg ${receiver && !isValidAddress ? 'border-red-400' : 'border-gray-300'}`}
-            placeholder="Enter receiver SS58 address"
+            placeholder="Enter receiver Stellar address"
             aria-invalid={!!receiver && !isValidAddress}
           />
           <p className={`mt-1 text-xs ${receiver && !isValidAddress ? 'text-red-600' : 'text-gray-500'}`}>
-            {receiver && !isValidAddress ? 'Invalid SS58 address' : 'Paste a valid Polkadot address'}
+            {receiver && !isValidAddress ? 'Invalid Stellar address' : 'Paste a valid Stellar address'}
           </p>
         </div>
 

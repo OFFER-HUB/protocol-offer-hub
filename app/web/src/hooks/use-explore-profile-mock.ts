@@ -1,6 +1,6 @@
 /**
  * Hook: use-explore-profile-mock
- * - Returns mock profile data for a given Polkadot address
+ * - Returns mock profile data for a given Stellar address
  * - No external requests; purely simulated for Explore flow demo
  */
 
@@ -19,7 +19,7 @@ function generateMockProfile(address: string): ProfileSummary {
     address,
     displayName,
     avatarUrl: `https://api.dicebear.com/8.x/thumbs/svg?seed=${encodeURIComponent(address)}`,
-    bio: 'Web3 developer focused on Polkadot ecosystem and on-chain reputation.',
+    bio: 'Web3 developer focused on Stellar ecosystem and on-chain reputation.',
     totalClaims,
     approvedClaims,
   };

@@ -1,5 +1,5 @@
 /**
- * Claim types and interfaces for SkillChain
+ * Claim types and interfaces for OFFER-HUB PROTOCOL
  */
 
 export enum ClaimType {

@@ -43,7 +43,7 @@ export const KiltIdentitySetup: React.FC<KiltIdentitySetupProps> = ({
         <h3 className="text-lg font-semibold mb-2">Create KILT Identity</h3>
         <p className="text-sm text-gray-600 mb-4">
           Create a decentralized identity (DID) using KILT Protocol. This will generate a Light DID
-          that you can link to your SkillChain profile.
+          that you can link to your OFFER-HUB PROTOCOL profile.
         </p>
       </div>
 
@@ -70,7 +70,7 @@ export const KiltIdentitySetup: React.FC<KiltIdentitySetupProps> = ({
             <strong>DID:</strong> {identity.did}
           </p>
           <p className="text-xs text-green-600">
-            Copy this DID and use it to link to your SkillChain profile.
+            Copy this DID and use it to link to your OFFER-HUB PROTOCOL profile.
           </p>
         </div>
       )}

@@ -39,7 +39,7 @@ export default function Explore() {
               Explore Profiles
             </h1>
             <p className="text-gray-600 mt-3">
-              Search for profiles by Polkadot address and view their claims
+              Search for profiles by Stellar address and view their claims
             </p>
 
             {/* Search form */}
@@ -53,7 +53,7 @@ export default function Explore() {
             {!searchAddress && (
               <div className="bg-white rounded-lg shadow-md p-8 text-center w-full">
                 <p className="text-gray-600">
-                  Enter a Polkadot address above to search for profiles and claims.
+                  Enter a Stellar address above to search for profiles and claims.
                 </p>
               </div>
             )}

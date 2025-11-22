@@ -20,13 +20,13 @@ export default function Home() {
         {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-6xl font-bold text-gray-900 mb-4">
-            Skill<span className="text-primary-600">Chain</span>
+            OFFER-HUB <span className="text-primary-600">PROTOCOL</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8">
             On-Chain Professional Reputation Protocol
           </p>
           <p className="text-gray-500 max-w-2xl mx-auto">
-            Build your verifiable professional reputation on Polkadot.
+            Build your verifiable professional reputation on Stellar.
             Register achievements, receive endorsements, and showcase your
             validated skills to the world.
           </p>
@@ -112,7 +112,7 @@ export default function Home() {
                 Connect your wallet to start building your on-chain reputation
               </p>
               <p className="text-sm text-gray-500">
-                Make sure you have the Polkadot.js extension installed
+                Make sure you have the Stellar wallet extension installed
               </p>
             </div>
           ) : (

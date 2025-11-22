@@ -11,20 +11,20 @@ import type { Claim, ClaimType } from '@/types/claim-types';
 import { useEffect, useState } from 'react';
 
 export default function PendingClaimsPage() {
-  const { selectedAccount, isConnected } = (require('@/context/WalletContext') as any).useWallet?.() || {};
+  const { publicKey, isConnected } = useWallet();
   const [claims, setClaims] = useState<Claim[]>([]);
 
   useEffect(() => {
     // MOCK: Replace with real data source (indexer or backend) listing claims issued by current user
-    if (!selectedAccount?.address) {
+    if (!publicKey) {
       setClaims([]);
       return;
     }
     const mock: Claim[] = [
       {
         id: 101,
-        issuer: selectedAccount.address,
-        receiver: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY',
+        issuer: publicKey,
+        receiver: 'GB6NVEN5HSUBKMYCE5ZOWSK5K23TBWRUQLZY3KNMXUZ3AQPECS2K4DMT',
         claimType: 'JobCompleted' as ClaimType,
         proofHash: '0x' + '1'.repeat(64),
         approved: false,
@@ -32,8 +32,8 @@ export default function PendingClaimsPage() {
       },
       {
         id: 102,
-        issuer: selectedAccount.address,
-        receiver: '5FHneW46xGXgs5mUiveU4sbTyGBzmstVj7hNwR4P3L3rZqYk',
+        issuer: publicKey,
+        receiver: 'GDQERENWDSIU6VU35EVI2R4PGBIOJ2CIOPKFEAAOS3M4X7XXM6MT36CK',
         claimType: 'RepoContribution' as ClaimType,
         proofHash: '0x' + '2'.repeat(64),
         approved: false,
@@ -41,7 +41,7 @@ export default function PendingClaimsPage() {
       },
     ];
     setClaims(mock);
-  }, [selectedAccount?.address]);
+  }, [publicKey]);
 
   return (
     <>
