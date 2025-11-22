@@ -22,7 +22,11 @@ Registra un nuevo perfil para el usuario autenticado.
 ```typescript
 {
   owner: Address,        // Dirección del wallet (se autentica automáticamente)
-  metadata_uri: string   // URI del metadata (IPFS, HTTP, etc.)
+  metadata_uri: string,   // URI del metadata (IPFS, HTTP, etc.)
+  display_name: string,   // Nombre visible
+  country_code?: string,  // Código de país opcional (ej: "MX")
+  email_hash?: ProofHash, // Hash SHA-256 del email opcional
+  linked_accounts: LinkedAccount[] // Cuentas asociadas (GitHub, etc.)
 }
 ```
 
@@ -34,8 +38,13 @@ Registra un nuevo perfil para el usuario autenticado.
 **Ejemplo:**
 ```typescript
 await contract.register_profile({
-  owner: "GABC...",  // Address de Stellar
-  metadata_uri: "ipfs://QmXyZ123..." // o "https://example.com/metadata.json"
+  owner: "GABC...",  
+  metadata_uri: "ipfs://QmXyZ123...",
+  display_name: "Josué Dev",
+  country_code: "MX",
+  linked_accounts: [
+    { platform: "github", handle: "josue-dev" }
+  ]
 });
 ```
 
@@ -43,9 +52,19 @@ await contract.register_profile({
 
 ---
 
-### 2. `add_claim`
+### 2. `update_profile_data`
 
-Añade un nuevo claim a otro usuario.
+Actualiza los datos del perfil existente.
+
+**Parámetros:** Mismos que `register_profile` (sin crear nuevo registro).
+
+**Retorna:** `void` o `Error`
+
+---
+
+### 3. `add_claim`
+
+Añade un nuevo claim a otro usuario. **Los claims se crean directamente como aprobados** ya que el issuer verifica el trabajo antes de crear el claim.
 
 **Parámetros:**
 ```typescript
@@ -61,6 +80,8 @@ Añade un nuevo claim a otro usuario.
 - ✅ `issuer` debe estar autenticado
 - ✅ `proof_hash` debe ser exactamente 32 bytes
 
+**Nota:** El claim se crea automáticamente con estado `Approved`. No es necesario aprobarlo después.
+
 **Ejemplo:**
 ```typescript
 import { hash } from 'crypto';
@@ -72,79 +93,20 @@ const proof = JSON.stringify({
 });
 const proofHash = hash('sha256').update(proof).digest(); // 32 bytes
 
-await contract.add_claim({
+const claimId = await contract.add_claim({
   issuer: "GABC...",           // Tu dirección
   receiver: "GDEF...",         // Dirección del receptor
   claim_type: "rust_expert",
   proof_hash: proofHash         // BytesN<32>
 });
+// El claim ya está aprobado, no necesitas llamar approve_claim
 ```
 
 **Retorna:** `u64` (ID del claim creado) o `Error`
 
 ---
 
-### 3. `approve_claim`
-
-Aprueba un claim (solo el emisor original).
-
-**Parámetros:**
-```typescript
-{
-  issuer: Address,    // Dirección del emisor (debe ser el que creó el claim)
-  claim_id: number     // ID del claim (u64)
-}
-```
-
-**Validaciones:**
-- ✅ `issuer` debe estar autenticado
-- ✅ `issuer` debe ser el creador original del claim
-- ❌ El claim no puede estar ya aprobado
-- ❌ El claim no puede estar rechazado
-
-**Ejemplo:**
-```typescript
-await contract.approve_claim({
-  issuer: "GABC...",    // Tu dirección (debe ser el emisor original)
-  claim_id: 42          // ID del claim a aprobar
-});
-```
-
-**Retorna:** `void` (éxito) o `Error`
-
----
-
-### 4. `reject_claim`
-
-Rechaza un claim (solo el emisor original).
-
-**Parámetros:**
-```typescript
-{
-  issuer: Address,    // Dirección del emisor (debe ser el que creó el claim)
-  claim_id: number     // ID del claim (u64)
-}
-```
-
-**Validaciones:**
-- ✅ `issuer` debe estar autenticado
-- ✅ `issuer` debe ser el creador original del claim
-- ❌ El claim no puede estar ya aprobado
-- ❌ El claim no puede estar rechazado
-
-**Ejemplo:**
-```typescript
-await contract.reject_claim({
-  issuer: "GABC...",    // Tu dirección (debe ser el emisor original)
-  claim_id: 42          // ID del claim a rechazar
-});
-```
-
-**Retorna:** `void` (éxito) o `Error`
-
----
-
-### 5. `link_did`
+### 4. `link_did`
 
 Vincula un DID al perfil del usuario autenticado.
 
@@ -176,9 +138,9 @@ await contract.link_did({
 
 ## Funciones de Lectura
 
-### 6. `get_profile`
+### 5. `get_profile`
 
-Obtiene el perfil de una dirección.
+Obtiene el perfil completo de una dirección.
 
 **Parámetros:**
 ```typescript
@@ -193,9 +155,40 @@ Obtiene el perfil de una dirección.
 interface Profile {
   owner: Address;
   metadata_uri: string;
-  did: string | null;  // Opcional
+  did: string | null;
+  display_name: string;
+  country_code: string | null;
+  email_hash: Uint8Array | null;
+  linked_accounts: LinkedAccount[];
+  joined_at: number; // Timestamp u64
+}
+
+interface LinkedAccount {
+  platform: string;
+  handle: string;
 }
 ```
+
+---
+
+### 6. `get_reputation_score`
+
+Calcula el puntaje de reputación basado en claims y antigüedad.
+
+**Parámetros:**
+```typescript
+{
+  account: Address
+}
+```
+
+**Lógica de Puntaje:**
+- `job_completed`: +10 puntos
+- `skill_*`: +5 puntos
+- Otros claims: +5 puntos
+- Antigüedad: +1 punto por semana desde registro
+
+**Retorna:** `number` (u32)
 
 ---
 
@@ -219,7 +212,7 @@ interface Claim {
   receiver: Address;
   claim_type: string;
   proof_hash: BytesN<32>;
-  status: "Pending" | "Approved" | "Rejected";
+  status: "Approved";  // Los claims se crean directamente como aprobados
 }
 ```
 
@@ -313,11 +306,8 @@ enum Error {
   ProfileAlreadyExists = 1,    // Perfil ya existe
   ProfileNotFound = 2,          // Perfil no encontrado
   ClaimNotFound = 3,             // Claim no encontrado
-  UnauthorizedApproval = 4,     // No autorizado para aprobar
-  ClaimAlreadyApproved = 5,     // Claim ya aprobado
   InvalidDid = 6,               // DID inválido
   InvalidMetadataUri = 7,       // Metadata URI inválido
-  ClaimAlreadyRejected = 8      // Claim ya rechazado
 }
 ```
 
@@ -388,28 +378,23 @@ await contract.register_profile({
   metadata_uri: "ipfs://QmXyZ123..."
 });
 
-// 2. Añadir claim
+// 2. Añadir claim (se crea directamente como aprobado)
 const proofHash = new Uint8Array(32); // SHA-256 del proof
-await contract.add_claim({
+const claimId = await contract.add_claim({
   issuer: userAddress,
   receiver: "GDEF...",
   claim_type: "rust_expert",
   proof_hash: proofHash
 });
+// El claim ya está aprobado, no necesitas llamar approve_claim
 
-// 3. Aprobar claim
-await contract.approve_claim({
-  issuer: userAddress,
-  claim_id: claimId
-});
-
-// 4. Vincular DID
+// 3. Vincular DID
 await contract.link_did({
   owner: userAddress,
   did: "did:kilt:4r1WkS3t8rbCb11H8t3tJvGVCynwDXSUBiuGB6sLRHzCLCjs"
 });
 
-// 5. Leer datos
+// 4. Leer datos
 const profile = await contract.get_profile({ account: userAddress });
 const claims = await contract.get_user_claims({ account: userAddress });
 ```

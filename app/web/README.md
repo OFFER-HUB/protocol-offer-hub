@@ -36,6 +36,14 @@ src/
 - **Types**: Shared types defined in `/src/types/`
 - **Pages**: Orchestrate components and hooks only
 
+## Contract Integration
+
+The frontend interacts with the Protocol Offer Hub smart contract on Stellar Testnet.
+
+**Configuration:**
+- `src/config/contract.ts` contains contract ID and network settings.
+- `src/hooks/use-offer-hub-contract.ts` is the main hook wrapping contract interactions.
+
 ## Tech Stack
 
 - Next.js 14
