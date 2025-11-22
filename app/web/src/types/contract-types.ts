@@ -9,12 +9,20 @@ export type Address = string;
 // BytesN<32> - Hash de 32 bytes
 export type ProofHash = Uint8Array | Buffer;
 
-// Status de un claim
-export type ClaimStatus = 'Pending' | 'Approved' | 'Rejected';
+// Status de un claim (claims are created directly as Approved)
+export type ClaimStatus = 'Approved';
 
 // ============================================================================
 // TIPOS DE DATOS DEL CONTRATO
 // ============================================================================
+
+/**
+ * Linked account (e.g. GitHub, LinkedIn)
+ */
+export interface LinkedAccount {
+  platform: string;
+  handle: string;
+}
 
 /**
  * Perfil de usuario
@@ -23,6 +31,11 @@ export interface Profile {
   owner: Address;
   metadata_uri: string;
   did: string | null;
+  display_name: string;
+  country_code: string | null;
+  email_hash: ProofHash | null;
+  linked_accounts: LinkedAccount[];
+  joined_at: number; // u64 timestamp
 }
 
 /**
@@ -47,6 +60,22 @@ export interface Claim {
 export interface RegisterProfileParams {
   owner: Address;
   metadata_uri: string; // Máximo 256 caracteres, no vacío
+  display_name: string;
+  country_code?: string; // Optional 2 letter code
+  email_hash?: ProofHash;
+  linked_accounts: LinkedAccount[];
+}
+
+/**
+ * Parámetros para update_profile_data
+ */
+export interface UpdateProfileParams {
+  owner: Address;
+  display_name: string;
+  metadata_uri: string;
+  country_code?: string;
+  email_hash?: ProofHash;
+  linked_accounts: LinkedAccount[];
 }
 
 /**
@@ -57,22 +86,6 @@ export interface AddClaimParams {
   receiver: Address;
   claim_type: string;
   proof_hash: ProofHash; // Exactamente 32 bytes
-}
-
-/**
- * Parámetros para approve_claim
- */
-export interface ApproveClaimParams {
-  issuer: Address; // Debe ser el emisor original del claim
-  claim_id: number; // u64
-}
-
-/**
- * Parámetros para reject_claim
- */
-export interface RejectClaimParams {
-  issuer: Address; // Debe ser el emisor original del claim
-  claim_id: number; // u64
 }
 
 /**
@@ -118,6 +131,13 @@ export interface GetDidParams {
   account: Address;
 }
 
+/**
+ * Parámetros para get_reputation_score
+ */
+export interface GetReputationScoreParams {
+  account: Address;
+}
+
 // ============================================================================
 // ERRORES DEL CONTRATO
 // ============================================================================
@@ -126,11 +146,8 @@ export enum ContractError {
   ProfileAlreadyExists = 1,
   ProfileNotFound = 2,
   ClaimNotFound = 3,
-  UnauthorizedApproval = 4,
-  ClaimAlreadyApproved = 5,
   InvalidDid = 6,
   InvalidMetadataUri = 7,
-  ClaimAlreadyRejected = 8,
 }
 
 /**
@@ -140,11 +157,8 @@ export const ErrorMessages: Record<ContractError, string> = {
   [ContractError.ProfileAlreadyExists]: 'Ya existe un perfil para esta dirección',
   [ContractError.ProfileNotFound]: 'No se encontró un perfil para esta dirección',
   [ContractError.ClaimNotFound]: 'No se encontró el claim',
-  [ContractError.UnauthorizedApproval]: 'No estás autorizado para aprobar este claim',
-  [ContractError.ClaimAlreadyApproved]: 'El claim ya está aprobado',
   [ContractError.InvalidDid]: 'Formato de DID inválido',
   [ContractError.InvalidMetadataUri]: 'URI de metadata inválido',
-  [ContractError.ClaimAlreadyRejected]: 'El claim ya está rechazado',
 };
 
 // ============================================================================
