@@ -1,5 +1,5 @@
 import { useWallet } from '@/context/WalletContext';
-import { useContract } from '@/hooks/useContract';
+import { useOfferHubContract } from '@/hooks/use-offer-hub-contract';
 import { useTotalClaims } from '@/hooks/useTotalClaims';
 import { useRecentClaims } from '@/hooks/use-recent-claims';
 import { Button } from '@/components/Button';
@@ -10,7 +10,7 @@ import Link from 'next/link';
 
 export default function Home() {
   const { isConnected, publicKey } = useWallet();
-  const { isReady, error: contractError } = useContract();
+  const { isReady, error: contractError } = useOfferHubContract();
   const { totalClaims, isLoading: isLoadingClaims, error: claimsError } = useTotalClaims();
   const { claims: recentClaims, isLoading: isLoadingRecent } = useRecentClaims();
 
