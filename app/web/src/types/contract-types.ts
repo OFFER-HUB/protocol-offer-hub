@@ -30,7 +30,6 @@ export interface LinkedAccount {
 export interface Profile {
   owner: Address;
   metadata_uri: string;
-  did: string | null;
   display_name: string;
   country_code: string | null;
   email_hash: ProofHash | null;
@@ -89,14 +88,6 @@ export interface AddClaimParams {
 }
 
 /**
- * Parámetros para link_did
- */
-export interface LinkDidParams {
-  owner: Address;
-  did: string; // Mínimo 10 caracteres, formato recomendado: did:kilt:...
-}
-
-/**
  * Parámetros para get_profile
  */
 export interface GetProfileParams {
@@ -125,13 +116,6 @@ export interface GetIssuerClaimsParams {
 }
 
 /**
- * Parámetros para get_did
- */
-export interface GetDidParams {
-  account: Address;
-}
-
-/**
  * Parámetros para get_reputation_score
  */
 export interface GetReputationScoreParams {
@@ -146,7 +130,6 @@ export enum ContractError {
   ProfileAlreadyExists = 1,
   ProfileNotFound = 2,
   ClaimNotFound = 3,
-  InvalidDid = 6,
   InvalidMetadataUri = 7,
 }
 
@@ -157,7 +140,6 @@ export const ErrorMessages: Record<ContractError, string> = {
   [ContractError.ProfileAlreadyExists]: 'Ya existe un perfil para esta dirección',
   [ContractError.ProfileNotFound]: 'No se encontró un perfil para esta dirección',
   [ContractError.ClaimNotFound]: 'No se encontró el claim',
-  [ContractError.InvalidDid]: 'Formato de DID inválido',
   [ContractError.InvalidMetadataUri]: 'URI de metadata inválido',
 };
 
@@ -184,19 +166,6 @@ export function validateProofHash(hash: ProofHash): void {
   const bytes = hash instanceof Uint8Array ? hash : new Uint8Array(hash);
   if (bytes.length !== 32) {
     throw new Error('proof_hash debe ser exactamente 32 bytes');
-  }
-}
-
-/**
- * Valida formato de DID
- */
-export function validateDid(did: string): void {
-  if (!did || did.length < 10) {
-    throw new Error('DID debe tener al menos 10 caracteres');
-  }
-  // Opcional: validar formato did:kilt:
-  if (!did.startsWith('did:') && process.env.NODE_ENV === 'development') {
-    console.warn('DID no sigue el formato estándar (did:...)');
   }
 }
 

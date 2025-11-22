@@ -1,9 +1,13 @@
 use soroban_sdk::{Env, Address, Vec};
 use crate::types::{DataKey, Profile, Claim};
 
+#[allow(dead_code)]
 const DAY_IN_LEDGERS: u32 = 17280; // Approximately 1 day
+#[allow(dead_code)]
 const PROFILE_LIFETIME: u32 = DAY_IN_LEDGERS * 365; // 1 year
+#[allow(dead_code)]
 const CLAIM_LIFETIME: u32 = DAY_IN_LEDGERS * 365; // 1 year
+#[allow(dead_code)]
 const INSTANCE_LIFETIME: u32 = DAY_IN_LEDGERS * 365; // 1 year
 
 // Profile storage

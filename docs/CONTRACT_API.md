@@ -352,17 +352,9 @@ function validateAddClaim(data: {
 }
 ```
 
-### Antes de llamar `link_did`:
+### Antes de llamar `link_did` (Removed):
 ```typescript
-function validateLinkDid(data: { did: string }) {
-  if (!data.did || data.did.length < 10) {
-    throw new Error('DID debe tener al menos 10 caracteres');
-  }
-  // Validar formato did:kilt: (opcional pero recomendado)
-  if (!data.did.startsWith('did:kilt:')) {
-    console.warn('DID no sigue el formato did:kilt:');
-  }
-}
+// function validateLinkDid(data: { did: string }) { ... }
 ```
 
 ---
@@ -388,11 +380,8 @@ const claimId = await contract.add_claim({
 });
 // El claim ya está aprobado, no necesitas llamar approve_claim
 
-// 3. Vincular DID
-await contract.link_did({
-  owner: userAddress,
-  did: "did:kilt:4r1WkS3t8rbCb11H8t3tJvGVCynwDXSUBiuGB6sLRHzCLCjs"
-});
+// 3. Vincular DID - REMOVED
+// await contract.link_did(...);
 
 // 4. Leer datos
 const profile = await contract.get_profile({ account: userAddress });

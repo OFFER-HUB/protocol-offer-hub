@@ -25,7 +25,7 @@
                   "string": "skill1"
                 },
                 {
-                  "bytes": "5788fa17dddc6eb9a82f59dd29b8d7c89d21ce7cf30bcd7bcddb782e0e6cb460"
+                  "bytes": "2c00d3243e1fbd5e39e9a8490ca943b6d65cce646e95e046178c2b1a37f89f45"
                 }
               ]
             }
@@ -53,7 +53,7 @@
                   "string": "skill2"
                 },
                 {
-                  "bytes": "5788fa17dddc6eb9a82f59dd29b8d7c89d21ce7cf30bcd7bcddb782e0e6cb460"
+                  "bytes": "2c00d3243e1fbd5e39e9a8490ca943b6d65cce646e95e046178c2b1a37f89f45"
                 }
               ]
             }
@@ -81,7 +81,7 @@
                   "string": "skill3"
                 },
                 {
-                  "bytes": "5788fa17dddc6eb9a82f59dd29b8d7c89d21ce7cf30bcd7bcddb782e0e6cb460"
+                  "bytes": "2c00d3243e1fbd5e39e9a8490ca943b6d65cce646e95e046178c2b1a37f89f45"
                 }
               ]
             }
@@ -168,7 +168,7 @@
                         "symbol": "proof_hash"
                       },
                       "val": {
-                        "bytes": "5788fa17dddc6eb9a82f59dd29b8d7c89d21ce7cf30bcd7bcddb782e0e6cb460"
+                        "bytes": "2c00d3243e1fbd5e39e9a8490ca943b6d65cce646e95e046178c2b1a37f89f45"
                       }
                     },
                     {
@@ -266,7 +266,7 @@
                         "symbol": "proof_hash"
                       },
                       "val": {
-                        "bytes": "5788fa17dddc6eb9a82f59dd29b8d7c89d21ce7cf30bcd7bcddb782e0e6cb460"
+                        "bytes": "2c00d3243e1fbd5e39e9a8490ca943b6d65cce646e95e046178c2b1a37f89f45"
                       }
                     },
                     {
@@ -364,7 +364,7 @@
                         "symbol": "proof_hash"
                       },
                       "val": {
-                        "bytes": "5788fa17dddc6eb9a82f59dd29b8d7c89d21ce7cf30bcd7bcddb782e0e6cb460"
+                        "bytes": "2c00d3243e1fbd5e39e9a8490ca943b6d65cce646e95e046178c2b1a37f89f45"
                       }
                     },
                     {

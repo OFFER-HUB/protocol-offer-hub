@@ -1,7 +1,9 @@
+#![allow(deprecated)]
+
 use soroban_sdk::{contract, contractimpl, symbol_short, Address, BytesN, Env, String, Vec, Symbol};
 use crate::types::{Claim, ClaimStatus, Profile, LinkedAccount};
 use crate::errors::Error;
-use crate::auth::{validate_did, validate_metadata_uri};
+use crate::auth::validate_metadata_uri;
 use crate::storage::{
     add_user_claim, add_issuer_claim, get_claim, get_next_claim_id, 
     get_profile, get_user_claims, get_issuer_claims, has_profile,
@@ -111,23 +113,9 @@ impl OfferHub {
         Ok(claim_id)
     }
 
-    /// Link a DID to the caller's profile
-    pub fn link_did(e: Env, owner: Address, did: String) -> Result<(), Error> {
-        owner.require_auth();
-
-        // Validate DID format
-        validate_did(&did)?;
-
-        let mut profile = get_profile(&e, &owner).ok_or(Error::ProfileNotFound)?;
-
-        profile.did = Some(did.clone());
-        set_profile(&e, &owner, &profile);
-
-        // Emit event
-        e.events().publish((symbol_short!("did_link"),), (owner, did));
-
-        Ok(())
-    }
+    /// Link a DID to the caller's profile - REMOVED
+    // This function is no longer needed for the MVP
+    // pub fn link_did(...)
 
     // ==========================================================================
     // Getters
