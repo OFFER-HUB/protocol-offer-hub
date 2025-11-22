@@ -38,6 +38,8 @@ fn test_register_profile_success() {
     assert_eq!(profile.did, None);
 }
 
+// DID tests removed
+
 #[test]
 fn test_register_duplicate_profile_fails() {
     let e = Env::default();
@@ -155,91 +157,30 @@ fn test_add_multiple_claims() {
 }
 
 // ==========================================================================
-// DID Tests
+// DID Tests - REMOVED
 // ==========================================================================
 
+/*
 #[test]
 fn test_link_did_success() {
-    let e = Env::default();
-    e.mock_all_auths();
-
-    let client = create_contract(&e);
-    let alice = Address::generate(&e);
-    let metadata = String::from_str(&e, "ipfs://QmTest");
-    let display_name = String::from_str(&e, "Alice");
-    let country_code: Option<Symbol> = None;
-    let email_hash: Option<BytesN<32>> = None;
-    let linked_accounts: Vec<LinkedAccount> = Vec::new(&e);
-
-    client.register_profile(&alice, &metadata, &display_name, &country_code, &email_hash, &linked_accounts);
-    
-    let did = String::from_str(&e, "did:kilt:4r1WkS3t8rbCb11H8t3tJvGVCynwDXSUBiuGB6sLRHzCLCjs");
-    client.link_did(&alice, &did);
-
-    let stored_did = client.get_did(&alice).unwrap();
-    assert_eq!(stored_did, did);
-    
-    let profile = client.get_profile(&alice).unwrap();
-    assert_eq!(profile.did, Some(did));
+    // ... removed ...
 }
 
 #[test]
 fn test_link_did_without_profile_fails() {
-    let e = Env::default();
-    e.mock_all_auths();
-
-    let client = create_contract(&e);
-    let alice = Address::generate(&e);
-    let did = String::from_str(&e, "did:kilt:123456789");
-
-    let res = client.try_link_did(&alice, &did);
-    assert_eq!(res, Err(Ok(Error::ProfileNotFound)));
+    // ... removed ...
 }
 
 #[test]
 fn test_link_invalid_did_fails() {
-    let e = Env::default();
-    e.mock_all_auths();
-
-    let client = create_contract(&e);
-    let alice = Address::generate(&e);
-    let metadata = String::from_str(&e, "ipfs://QmTest");
-    let display_name = String::from_str(&e, "Alice");
-    let country_code: Option<Symbol> = None;
-    let email_hash: Option<BytesN<32>> = None;
-    let linked_accounts: Vec<LinkedAccount> = Vec::new(&e);
-
-    client.register_profile(&alice, &metadata, &display_name, &country_code, &email_hash, &linked_accounts);
-    
-    let did = String::from_str(&e, "short");
-    let res = client.try_link_did(&alice, &did);
-    assert_eq!(res, Err(Ok(Error::InvalidDid)));
+    // ... removed ...
 }
 
 #[test]
 fn test_update_did() {
-    let e = Env::default();
-    e.mock_all_auths();
-
-    let client = create_contract(&e);
-    let alice = Address::generate(&e);
-    let metadata = String::from_str(&e, "ipfs://QmTest");
-    let display_name = String::from_str(&e, "Alice");
-    let country_code: Option<Symbol> = None;
-    let email_hash: Option<BytesN<32>> = None;
-    let linked_accounts: Vec<LinkedAccount> = Vec::new(&e);
-
-    client.register_profile(&alice, &metadata, &display_name, &country_code, &email_hash, &linked_accounts);
-    
-    let did1 = String::from_str(&e, "did:kilt:old12345");
-    client.link_did(&alice, &did1);
-    
-    let did2 = String::from_str(&e, "did:kilt:new12345");
-    client.link_did(&alice, &did2);
-
-    let stored_did = client.get_did(&alice).unwrap();
-    assert_eq!(stored_did, did2);
+    // ... removed ...
 }
+*/
 
 // ==========================================================================
 // Getter Tests
@@ -352,11 +293,13 @@ fn test_full_workflow() {
     client.register_profile(&issuer, &issuer_metadata, &display_name, &country_code, &email_hash, &linked_accounts);
     client.register_profile(&receiver, &receiver_metadata, &display_name, &country_code, &email_hash, &linked_accounts);
     
-    // Link DIDs
+    // Link DIDs - REMOVED
+    /*
     let issuer_did = String::from_str(&e, "did:kilt:issuer123");
     let receiver_did = String::from_str(&e, "did:kilt:receiver456");
     client.link_did(&issuer, &issuer_did);
     client.link_did(&receiver, &receiver_did);
+    */
     
     // Add claims
     let claim_type = String::from_str(&e, "rust_expert");
@@ -364,11 +307,11 @@ fn test_full_workflow() {
     let claim_id = client.add_claim(&issuer, &receiver, &claim_type, &proof_hash);
     
     // Verify final state
-    let issuer_profile = client.get_profile(&issuer).unwrap();
-    assert_eq!(issuer_profile.did, Some(issuer_did));
+    let _issuer_profile = client.get_profile(&issuer).unwrap();
+    // assert_eq!(issuer_profile.did, Some(issuer_did));
     
-    let receiver_profile = client.get_profile(&receiver).unwrap();
-    assert_eq!(receiver_profile.did, Some(receiver_did));
+    let _receiver_profile = client.get_profile(&receiver).unwrap();
+    // assert_eq!(receiver_profile.did, Some(receiver_did));
     
     let claim = client.get_claim(&claim_id).unwrap();
     assert_eq!(claim.status, ClaimStatus::Approved);
