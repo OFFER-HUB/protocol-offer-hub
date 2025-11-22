@@ -2,8 +2,8 @@
 
 use super::contract::{OfferHub, OfferHubClient};
 use super::errors::Error;
-use super::types::ClaimStatus;
-use soroban_sdk::{testutils::{Address as _, BytesN as _}, Address, BytesN, Env, String};
+use super::types::{ClaimStatus, LinkedAccount};
+use soroban_sdk::{testutils::{Address as _, BytesN as _}, Address, BytesN, Env, String, Vec, Symbol};
 
 fn create_contract<'a>(e: &Env) -> OfferHubClient<'a> {
     let contract_id = e.register(OfferHub, ());
@@ -22,14 +22,19 @@ fn test_register_profile_success() {
     let client = create_contract(&e);
     let alice = Address::generate(&e);
     let metadata = String::from_str(&e, "ipfs://QmTest123");
+    let display_name = String::from_str(&e, "Alice");
+    let country_code: Option<Symbol> = None;
+    let email_hash: Option<BytesN<32>> = None;
+    let linked_accounts: Vec<LinkedAccount> = Vec::new(&e);
 
     // Register profile
-    client.register_profile(&alice, &metadata);
+    client.register_profile(&alice, &metadata, &display_name, &country_code, &email_hash, &linked_accounts);
 
     // Verify profile
     let profile = client.get_profile(&alice).unwrap();
     assert_eq!(profile.owner, alice);
     assert_eq!(profile.metadata_uri, metadata);
+    assert_eq!(profile.display_name, display_name);
     assert_eq!(profile.did, None);
 }
 
@@ -41,10 +46,14 @@ fn test_register_duplicate_profile_fails() {
     let client = create_contract(&e);
     let alice = Address::generate(&e);
     let metadata = String::from_str(&e, "ipfs://QmTest123");
+    let display_name = String::from_str(&e, "Alice");
+    let country_code: Option<Symbol> = None;
+    let email_hash: Option<BytesN<32>> = None;
+    let linked_accounts: Vec<LinkedAccount> = Vec::new(&e);
 
-    client.register_profile(&alice, &metadata);
+    client.register_profile(&alice, &metadata, &display_name, &country_code, &email_hash, &linked_accounts);
     
-    let res = client.try_register_profile(&alice, &metadata);
+    let res = client.try_register_profile(&alice, &metadata, &display_name, &country_code, &email_hash, &linked_accounts);
     assert_eq!(res, Err(Ok(Error::ProfileAlreadyExists)));
 }
 
@@ -56,8 +65,12 @@ fn test_register_profile_empty_metadata_fails() {
     let client = create_contract(&e);
     let alice = Address::generate(&e);
     let metadata = String::from_str(&e, "");
+    let display_name = String::from_str(&e, "Alice");
+    let country_code: Option<Symbol> = None;
+    let email_hash: Option<BytesN<32>> = None;
+    let linked_accounts: Vec<LinkedAccount> = Vec::new(&e);
 
-    let res = client.try_register_profile(&alice, &metadata);
+    let res = client.try_register_profile(&alice, &metadata, &display_name, &country_code, &email_hash, &linked_accounts);
     assert_eq!(res, Err(Ok(Error::InvalidMetadataUri)));
 }
 
@@ -74,10 +87,15 @@ fn test_register_multiple_profiles() {
     let metadata_alice = String::from_str(&e, "ipfs://Alice");
     let metadata_bob = String::from_str(&e, "ipfs://Bob");
     let metadata_charlie = String::from_str(&e, "ipfs://Charlie");
+    
+    let display_name = String::from_str(&e, "User");
+    let country_code: Option<Symbol> = None;
+    let email_hash: Option<BytesN<32>> = None;
+    let linked_accounts: Vec<LinkedAccount> = Vec::new(&e);
 
-    client.register_profile(&alice, &metadata_alice);
-    client.register_profile(&bob, &metadata_bob);
-    client.register_profile(&charlie, &metadata_charlie);
+    client.register_profile(&alice, &metadata_alice, &display_name, &country_code, &email_hash, &linked_accounts);
+    client.register_profile(&bob, &metadata_bob, &display_name, &country_code, &email_hash, &linked_accounts);
+    client.register_profile(&charlie, &metadata_charlie, &display_name, &country_code, &email_hash, &linked_accounts);
 
     assert!(client.get_profile(&alice).is_some());
     assert!(client.get_profile(&bob).is_some());
@@ -107,7 +125,7 @@ fn test_add_claim_success() {
     assert_eq!(claim.issuer, issuer);
     assert_eq!(claim.receiver, receiver);
     assert_eq!(claim.claim_type, claim_type);
-    assert_eq!(claim.status, ClaimStatus::Pending);
+    assert_eq!(claim.status, ClaimStatus::Approved);
 }
 
 #[test]
@@ -136,132 +154,6 @@ fn test_add_multiple_claims() {
     assert_eq!(user_claims.len(), 3);
 }
 
-#[test]
-fn test_approve_claim_success() {
-    let e = Env::default();
-    e.mock_all_auths();
-
-    let client = create_contract(&e);
-    let issuer = Address::generate(&e);
-    let receiver = Address::generate(&e);
-    
-    let claim_type = String::from_str(&e, "test_skill");
-    let proof_hash = BytesN::random(&e);
-
-    let claim_id = client.add_claim(&issuer, &receiver, &claim_type, &proof_hash);
-    client.approve_claim(&issuer, &claim_id);
-    
-    let claim = client.get_claim(&claim_id).unwrap();
-    assert_eq!(claim.status, ClaimStatus::Approved);
-}
-
-#[test]
-fn test_approve_claim_twice_fails() {
-    let e = Env::default();
-    e.mock_all_auths();
-
-    let client = create_contract(&e);
-    let issuer = Address::generate(&e);
-    let receiver = Address::generate(&e);
-    
-    let claim_type = String::from_str(&e, "test");
-    let proof_hash = BytesN::random(&e);
-
-    let claim_id = client.add_claim(&issuer, &receiver, &claim_type, &proof_hash);
-    client.approve_claim(&issuer, &claim_id);
-    
-    let res = client.try_approve_claim(&issuer, &claim_id);
-    assert_eq!(res, Err(Ok(Error::ClaimAlreadyApproved)));
-}
-
-#[test]
-fn test_approve_nonexistent_claim_fails() {
-    let e = Env::default();
-    e.mock_all_auths();
-
-    let client = create_contract(&e);
-    let issuer = Address::generate(&e);
-
-    let res = client.try_approve_claim(&issuer, &999);
-    assert_eq!(res, Err(Ok(Error::ClaimNotFound)));
-}
-
-#[test]
-fn test_unauthorized_approval_fails() {
-    let e = Env::default();
-    e.mock_all_auths();
-
-    let client = create_contract(&e);
-    let issuer = Address::generate(&e);
-    let receiver = Address::generate(&e);
-    let attacker = Address::generate(&e);
-    
-    let claim_type = String::from_str(&e, "test");
-    let proof_hash = BytesN::random(&e);
-
-    let claim_id = client.add_claim(&issuer, &receiver, &claim_type, &proof_hash);
-
-    let res = client.try_approve_claim(&attacker, &claim_id);
-    assert_eq!(res, Err(Ok(Error::UnauthorizedApproval)));
-}
-
-#[test]
-fn test_reject_claim_success() {
-    let e = Env::default();
-    e.mock_all_auths();
-
-    let client = create_contract(&e);
-    let issuer = Address::generate(&e);
-    let receiver = Address::generate(&e);
-    
-    let claim_type = String::from_str(&e, "test");
-    let proof_hash = BytesN::random(&e);
-
-    let claim_id = client.add_claim(&issuer, &receiver, &claim_type, &proof_hash);
-    client.reject_claim(&issuer, &claim_id);
-    
-    let claim = client.get_claim(&claim_id).unwrap();
-    assert_eq!(claim.status, ClaimStatus::Rejected);
-}
-
-#[test]
-fn test_reject_approved_claim_fails() {
-    let e = Env::default();
-    e.mock_all_auths();
-
-    let client = create_contract(&e);
-    let issuer = Address::generate(&e);
-    let receiver = Address::generate(&e);
-    
-    let claim_type = String::from_str(&e, "test");
-    let proof_hash = BytesN::random(&e);
-
-    let claim_id = client.add_claim(&issuer, &receiver, &claim_type, &proof_hash);
-    client.approve_claim(&issuer, &claim_id);
-    
-    let res = client.try_reject_claim(&issuer, &claim_id);
-    assert_eq!(res, Err(Ok(Error::ClaimAlreadyApproved)));
-}
-
-#[test]
-fn test_approve_rejected_claim_fails() {
-    let e = Env::default();
-    e.mock_all_auths();
-
-    let client = create_contract(&e);
-    let issuer = Address::generate(&e);
-    let receiver = Address::generate(&e);
-    
-    let claim_type = String::from_str(&e, "test");
-    let proof_hash = BytesN::random(&e);
-
-    let claim_id = client.add_claim(&issuer, &receiver, &claim_type, &proof_hash);
-    client.reject_claim(&issuer, &claim_id);
-    
-    let res = client.try_approve_claim(&issuer, &claim_id);
-    assert_eq!(res, Err(Ok(Error::ClaimAlreadyRejected)));
-}
-
 // ==========================================================================
 // DID Tests
 // ==========================================================================
@@ -274,8 +166,12 @@ fn test_link_did_success() {
     let client = create_contract(&e);
     let alice = Address::generate(&e);
     let metadata = String::from_str(&e, "ipfs://QmTest");
+    let display_name = String::from_str(&e, "Alice");
+    let country_code: Option<Symbol> = None;
+    let email_hash: Option<BytesN<32>> = None;
+    let linked_accounts: Vec<LinkedAccount> = Vec::new(&e);
 
-    client.register_profile(&alice, &metadata);
+    client.register_profile(&alice, &metadata, &display_name, &country_code, &email_hash, &linked_accounts);
     
     let did = String::from_str(&e, "did:kilt:4r1WkS3t8rbCb11H8t3tJvGVCynwDXSUBiuGB6sLRHzCLCjs");
     client.link_did(&alice, &did);
@@ -308,8 +204,12 @@ fn test_link_invalid_did_fails() {
     let client = create_contract(&e);
     let alice = Address::generate(&e);
     let metadata = String::from_str(&e, "ipfs://QmTest");
+    let display_name = String::from_str(&e, "Alice");
+    let country_code: Option<Symbol> = None;
+    let email_hash: Option<BytesN<32>> = None;
+    let linked_accounts: Vec<LinkedAccount> = Vec::new(&e);
 
-    client.register_profile(&alice, &metadata);
+    client.register_profile(&alice, &metadata, &display_name, &country_code, &email_hash, &linked_accounts);
     
     let did = String::from_str(&e, "short");
     let res = client.try_link_did(&alice, &did);
@@ -324,8 +224,12 @@ fn test_update_did() {
     let client = create_contract(&e);
     let alice = Address::generate(&e);
     let metadata = String::from_str(&e, "ipfs://QmTest");
+    let display_name = String::from_str(&e, "Alice");
+    let country_code: Option<Symbol> = None;
+    let email_hash: Option<BytesN<32>> = None;
+    let linked_accounts: Vec<LinkedAccount> = Vec::new(&e);
 
-    client.register_profile(&alice, &metadata);
+    client.register_profile(&alice, &metadata, &display_name, &country_code, &email_hash, &linked_accounts);
     
     let did1 = String::from_str(&e, "did:kilt:old12345");
     client.link_did(&alice, &did1);
@@ -440,8 +344,13 @@ fn test_full_workflow() {
     // Register profiles
     let issuer_metadata = String::from_str(&e, "ipfs://issuer");
     let receiver_metadata = String::from_str(&e, "ipfs://receiver");
-    client.register_profile(&issuer, &issuer_metadata);
-    client.register_profile(&receiver, &receiver_metadata);
+    let display_name = String::from_str(&e, "User");
+    let country_code: Option<Symbol> = None;
+    let email_hash: Option<BytesN<32>> = None;
+    let linked_accounts: Vec<LinkedAccount> = Vec::new(&e);
+
+    client.register_profile(&issuer, &issuer_metadata, &display_name, &country_code, &email_hash, &linked_accounts);
+    client.register_profile(&receiver, &receiver_metadata, &display_name, &country_code, &email_hash, &linked_accounts);
     
     // Link DIDs
     let issuer_did = String::from_str(&e, "did:kilt:issuer123");
@@ -453,9 +362,6 @@ fn test_full_workflow() {
     let claim_type = String::from_str(&e, "rust_expert");
     let proof_hash = BytesN::random(&e);
     let claim_id = client.add_claim(&issuer, &receiver, &claim_type, &proof_hash);
-    
-    // Approve claim
-    client.approve_claim(&issuer, &claim_id);
     
     // Verify final state
     let issuer_profile = client.get_profile(&issuer).unwrap();

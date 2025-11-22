@@ -25,7 +25,7 @@
                   "string": "hackathon_winner"
                 },
                 {
-                  "bytes": "ebfa678f173fe340bb84c10c163f1c8b30ea1e57a54fdfe5648df37cec1c03b2"
+                  "bytes": "bc12e3cc465afa9954e9db86be37fe3e811ae53915a614b781edf780d539c78e"
                 }
               ]
             }
@@ -112,7 +112,7 @@
                         "symbol": "proof_hash"
                       },
                       "val": {
-                        "bytes": "ebfa678f173fe340bb84c10c163f1c8b30ea1e57a54fdfe5648df37cec1c03b2"
+                        "bytes": "bc12e3cc465afa9954e9db86be37fe3e811ae53915a614b781edf780d539c78e"
                       }
                     },
                     {
@@ -130,7 +130,7 @@
                       "val": {
                         "vec": [
                           {
-                            "symbol": "Pending"
+                            "symbol": "Approved"
                           }
                         ]
                       }

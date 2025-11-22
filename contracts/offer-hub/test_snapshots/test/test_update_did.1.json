@@ -20,6 +20,14 @@
                 },
                 {
                   "string": "ipfs://QmTest"
+                },
+                {
+                  "string": "Alice"
+                },
+                "void",
+                "void",
+                {
+                  "vec": []
                 }
               ]
             }
@@ -123,10 +131,46 @@
                   "map": [
                     {
                       "key": {
+                        "symbol": "country_code"
+                      },
+                      "val": "void"
+                    },
+                    {
+                      "key": {
                         "symbol": "did"
                       },
                       "val": {
                         "string": "did:kilt:new12345"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "display_name"
+                      },
+                      "val": {
+                        "string": "Alice"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "email_hash"
+                      },
+                      "val": "void"
+                    },
+                    {
+                      "key": {
+                        "symbol": "joined_at"
+                      },
+                      "val": {
+                        "u64": "0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "linked_accounts"
+                      },
+                      "val": {
+                        "vec": []
                       }
                     },
                     {

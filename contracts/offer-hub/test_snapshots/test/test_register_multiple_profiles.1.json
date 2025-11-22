@@ -20,6 +20,14 @@
                 },
                 {
                   "string": "ipfs://Alice"
+                },
+                {
+                  "string": "User"
+                },
+                "void",
+                "void",
+                {
+                  "vec": []
                 }
               ]
             }
@@ -42,6 +50,14 @@
                 },
                 {
                   "string": "ipfs://Bob"
+                },
+                {
+                  "string": "User"
+                },
+                "void",
+                "void",
+                {
+                  "vec": []
                 }
               ]
             }
@@ -64,6 +80,14 @@
                 },
                 {
                   "string": "ipfs://Charlie"
+                },
+                {
+                  "string": "User"
+                },
+                "void",
+                "void",
+                {
+                  "vec": []
                 }
               ]
             }
@@ -125,9 +149,45 @@
                   "map": [
                     {
                       "key": {
+                        "symbol": "country_code"
+                      },
+                      "val": "void"
+                    },
+                    {
+                      "key": {
                         "symbol": "did"
                       },
                       "val": "void"
+                    },
+                    {
+                      "key": {
+                        "symbol": "display_name"
+                      },
+                      "val": {
+                        "string": "User"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "email_hash"
+                      },
+                      "val": "void"
+                    },
+                    {
+                      "key": {
+                        "symbol": "joined_at"
+                      },
+                      "val": {
+                        "u64": "0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "linked_accounts"
+                      },
+                      "val": {
+                        "vec": []
+                      }
                     },
                     {
                       "key": {
@@ -193,9 +253,45 @@
                   "map": [
                     {
                       "key": {
+                        "symbol": "country_code"
+                      },
+                      "val": "void"
+                    },
+                    {
+                      "key": {
                         "symbol": "did"
                       },
                       "val": "void"
+                    },
+                    {
+                      "key": {
+                        "symbol": "display_name"
+                      },
+                      "val": {
+                        "string": "User"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "email_hash"
+                      },
+                      "val": "void"
+                    },
+                    {
+                      "key": {
+                        "symbol": "joined_at"
+                      },
+                      "val": {
+                        "u64": "0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "linked_accounts"
+                      },
+                      "val": {
+                        "vec": []
+                      }
                     },
                     {
                       "key": {
@@ -261,9 +357,45 @@
                   "map": [
                     {
                       "key": {
+                        "symbol": "country_code"
+                      },
+                      "val": "void"
+                    },
+                    {
+                      "key": {
                         "symbol": "did"
                       },
                       "val": "void"
+                    },
+                    {
+                      "key": {
+                        "symbol": "display_name"
+                      },
+                      "val": {
+                        "string": "User"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "email_hash"
+                      },
+                      "val": "void"
+                    },
+                    {
+                      "key": {
+                        "symbol": "joined_at"
+                      },
+                      "val": {
+                        "u64": "0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "linked_accounts"
+                      },
+                      "val": {
+                        "vec": []
+                      }
                     },
                     {
                       "key": {

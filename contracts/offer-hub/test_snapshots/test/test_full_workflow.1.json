@@ -20,6 +20,14 @@
                 },
                 {
                   "string": "ipfs://issuer"
+                },
+                {
+                  "string": "User"
+                },
+                "void",
+                "void",
+                {
+                  "vec": []
                 }
               ]
             }
@@ -42,6 +50,14 @@
                 },
                 {
                   "string": "ipfs://receiver"
+                },
+                {
+                  "string": "User"
+                },
+                "void",
+                "void",
+                {
+                  "vec": []
                 }
               ]
             }
@@ -113,29 +129,7 @@
                   "string": "rust_expert"
                 },
                 {
-                  "bytes": "d76db8252a073736d84ddf3c8bb3c9096b7b24ea594c108f5c13cb376411e2ed"
-                }
-              ]
-            }
-          },
-          "sub_invocations": []
-        }
-      ]
-    ],
-    [
-      [
-        "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4",
-        {
-          "function": {
-            "contract_fn": {
-              "contract_address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
-              "function_name": "approve_claim",
-              "args": [
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
-                },
-                {
-                  "u64": "0"
+                  "bytes": "ccc0e7f465c8a6b36230ee4eff957e4e49627b4c216f2ff34428dbb144f968a9"
                 }
               ]
             }
@@ -226,7 +220,7 @@
                         "symbol": "proof_hash"
                       },
                       "val": {
-                        "bytes": "d76db8252a073736d84ddf3c8bb3c9096b7b24ea594c108f5c13cb376411e2ed"
+                        "bytes": "ccc0e7f465c8a6b36230ee4eff957e4e49627b4c216f2ff34428dbb144f968a9"
                       }
                     },
                     {
@@ -346,10 +340,46 @@
                   "map": [
                     {
                       "key": {
+                        "symbol": "country_code"
+                      },
+                      "val": "void"
+                    },
+                    {
+                      "key": {
                         "symbol": "did"
                       },
                       "val": {
                         "string": "did:kilt:issuer123"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "display_name"
+                      },
+                      "val": {
+                        "string": "User"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "email_hash"
+                      },
+                      "val": "void"
+                    },
+                    {
+                      "key": {
+                        "symbol": "joined_at"
+                      },
+                      "val": {
+                        "u64": "0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "linked_accounts"
+                      },
+                      "val": {
+                        "vec": []
                       }
                     },
                     {
@@ -416,10 +446,46 @@
                   "map": [
                     {
                       "key": {
+                        "symbol": "country_code"
+                      },
+                      "val": "void"
+                    },
+                    {
+                      "key": {
                         "symbol": "did"
                       },
                       "val": {
                         "string": "did:kilt:receiver456"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "display_name"
+                      },
+                      "val": {
+                        "string": "User"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "email_hash"
+                      },
+                      "val": "void"
+                    },
+                    {
+                      "key": {
+                        "symbol": "joined_at"
+                      },
+                      "val": {
+                        "u64": "0"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "linked_accounts"
+                      },
+                      "val": {
+                        "vec": []
                       }
                     },
                     {
@@ -629,39 +695,6 @@
                 "key": {
                   "ledger_key_nonce": {
                     "nonce": "2032731177588607455"
-                  }
-                },
-                "durability": "temporary",
-                "val": "void"
-              }
-            },
-            "ext": "v0"
-          },
-          6311999
-        ]
-      ],
-      [
-        {
-          "contract_data": {
-            "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4",
-            "key": {
-              "ledger_key_nonce": {
-                "nonce": "4270020994084947596"
-              }
-            },
-            "durability": "temporary"
-          }
-        },
-        [
-          {
-            "last_modified_ledger_seq": 0,
-            "data": {
-              "contract_data": {
-                "ext": "v0",
-                "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4",
-                "key": {
-                  "ledger_key_nonce": {
-                    "nonce": "4270020994084947596"
                   }
                 },
                 "durability": "temporary",

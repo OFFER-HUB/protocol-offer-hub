@@ -25,7 +25,7 @@
                   "string": "skill1"
                 },
                 {
-                  "bytes": "776da0abe07cfcb39ad27ec735abe2fcd5026fcb22aaa1b18e2c28c41a7ecfee"
+                  "bytes": "5788fa17dddc6eb9a82f59dd29b8d7c89d21ce7cf30bcd7bcddb782e0e6cb460"
                 }
               ]
             }
@@ -53,7 +53,7 @@
                   "string": "skill2"
                 },
                 {
-                  "bytes": "776da0abe07cfcb39ad27ec735abe2fcd5026fcb22aaa1b18e2c28c41a7ecfee"
+                  "bytes": "5788fa17dddc6eb9a82f59dd29b8d7c89d21ce7cf30bcd7bcddb782e0e6cb460"
                 }
               ]
             }
@@ -81,7 +81,7 @@
                   "string": "skill3"
                 },
                 {
-                  "bytes": "776da0abe07cfcb39ad27ec735abe2fcd5026fcb22aaa1b18e2c28c41a7ecfee"
+                  "bytes": "5788fa17dddc6eb9a82f59dd29b8d7c89d21ce7cf30bcd7bcddb782e0e6cb460"
                 }
               ]
             }
@@ -168,7 +168,7 @@
                         "symbol": "proof_hash"
                       },
                       "val": {
-                        "bytes": "776da0abe07cfcb39ad27ec735abe2fcd5026fcb22aaa1b18e2c28c41a7ecfee"
+                        "bytes": "5788fa17dddc6eb9a82f59dd29b8d7c89d21ce7cf30bcd7bcddb782e0e6cb460"
                       }
                     },
                     {
@@ -186,7 +186,7 @@
                       "val": {
                         "vec": [
                           {
-                            "symbol": "Pending"
+                            "symbol": "Approved"
                           }
                         ]
                       }
@@ -266,7 +266,7 @@
                         "symbol": "proof_hash"
                       },
                       "val": {
-                        "bytes": "776da0abe07cfcb39ad27ec735abe2fcd5026fcb22aaa1b18e2c28c41a7ecfee"
+                        "bytes": "5788fa17dddc6eb9a82f59dd29b8d7c89d21ce7cf30bcd7bcddb782e0e6cb460"
                       }
                     },
                     {
@@ -284,7 +284,7 @@
                       "val": {
                         "vec": [
                           {
-                            "symbol": "Pending"
+                            "symbol": "Approved"
                           }
                         ]
                       }
@@ -364,7 +364,7 @@
                         "symbol": "proof_hash"
                       },
                       "val": {
-                        "bytes": "776da0abe07cfcb39ad27ec735abe2fcd5026fcb22aaa1b18e2c28c41a7ecfee"
+                        "bytes": "5788fa17dddc6eb9a82f59dd29b8d7c89d21ce7cf30bcd7bcddb782e0e6cb460"
                       }
                     },
                     {
@@ -382,7 +382,7 @@
                       "val": {
                         "vec": [
                           {
-                            "symbol": "Pending"
+                            "symbol": "Approved"
                           }
                         ]
                       }
