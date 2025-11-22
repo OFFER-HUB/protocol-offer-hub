@@ -26,7 +26,7 @@
                   "string": "test"
                 },
                 {
-                  "bytes": "7665a8530754b4645147327dab888c24188df1b295d329855b866817aaa70bc6"
+                  "bytes": "b4eb706d0674af299d0bf51c966d513b37ead7f006be164e28057f27693184bb"
                 }
               ]
             }
@@ -55,7 +55,7 @@
                   "string": "test"
                 },
                 {
-                  "bytes": "7665a8530754b4645147327dab888c24188df1b295d329855b866817aaa70bc6"
+                  "bytes": "b4eb706d0674af299d0bf51c966d513b37ead7f006be164e28057f27693184bb"
                 }
               ]
             }
@@ -142,7 +142,7 @@
                         "symbol": "proof_hash"
                       },
                       "val": {
-                        "bytes": "7665a8530754b4645147327dab888c24188df1b295d329855b866817aaa70bc6"
+                        "bytes": "b4eb706d0674af299d0bf51c966d513b37ead7f006be164e28057f27693184bb"
                       }
                     },
                     {
@@ -240,7 +240,7 @@
                         "symbol": "proof_hash"
                       },
                       "val": {
-                        "bytes": "7665a8530754b4645147327dab888c24188df1b295d329855b866817aaa70bc6"
+                        "bytes": "b4eb706d0674af299d0bf51c966d513b37ead7f006be164e28057f27693184bb"
                       }
                     },
                     {

@@ -1,4 +1,6 @@
 #![no_std]
+#![allow(unused_imports)]
+#![allow(dead_code)]
 
 mod errors;
 mod events;
