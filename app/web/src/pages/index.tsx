@@ -19,13 +19,16 @@ export default function Home() {
   const { isReady, error: contractError } = useOfferHubContract();
   const { totalClaims, isLoading: isLoadingClaims, error: claimsError } = useTotalClaims();
   const { claims: recentClaims, isLoading: isLoadingRecent } = useRecentClaims();
-  const { hasProfile, profile } = useUserProfile();
+  const { hasProfile, profile, isLoading: isLoadingProfile } = useUserProfile();
   const { score: reputationScore } = useReputationScore(publicKey);
   const { claims: userClaims } = useUserClaims(publicKey);
   const { claims: issuedClaims } = useIssuedClaims(publicKey);
 
   const receivedClaimsCount = userClaims.length;
   const issuedClaimsCount = issuedClaims.length;
+
+  // Show loading state while checking profile to prevent flickering
+  const isCheckingProfile = isConnected && isLoadingProfile;
 
   return (
     <>
@@ -49,8 +52,8 @@ export default function Home() {
           </p>
         </div>
 
-        {/* User Dashboard (if connected) */}
-        {isConnected && hasProfile && (
+        {/* User Dashboard (if connected and profile loaded) */}
+        {isConnected && !isCheckingProfile && hasProfile && (
           <div className="mb-16 max-w-5xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Reputation Score Card */}
@@ -87,8 +90,13 @@ export default function Home() {
         {isConnected && (
           <div className="mb-16 max-w-5xl mx-auto">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Quick Actions</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {hasProfile ? (
+            {isCheckingProfile ? (
+              <div className="flex justify-center py-8">
+                <LoadingSpinner size="lg" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {hasProfile ? (
                 <>
                   <Link href="/profile">
                     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer">
@@ -137,7 +145,8 @@ export default function Home() {
                   </Link>
                 </>
               )}
-            </div>
+              </div>
+            )}
           </div>
         )}
 
