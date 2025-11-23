@@ -32,8 +32,7 @@ export function ProfileConnectionGuard() {
 
     // Only redirect from home page when wallet first connects without profile
     // Let ProfileGuard handle other protected routes
-    // Also don't redirect if already on create page
-    if (router.pathname !== '/' || router.pathname === '/profile/create') {
+    if (router.pathname !== '/') {
       return;
     }
 

@@ -507,10 +507,10 @@ export default function TestContractPage() {
 
                        {/* Preview or Manual Input */}
                        <div className="relative">
-                          <input
-                            type="text"
-                            value={metadataUri}
-                            onChange={(e) => setMetadataUri(e.target.value)}
+                  <input
+                    type="text"
+                    value={metadataUri}
+                    onChange={(e) => setMetadataUri(e.target.value)}
                             className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 font-mono text-xs text-gray-500 bg-gray-50"
                             placeholder="ipfs://..."
                             readOnly

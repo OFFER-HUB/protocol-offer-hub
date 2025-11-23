@@ -98,7 +98,7 @@ export function Header() {
                       : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
                   }`}
                 >
-                  Issue Claim
+                  Generate Claim
                 </Link>
                 <Link
                   href="/issued-claims"

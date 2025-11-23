@@ -2,6 +2,7 @@
  * Profile page - View and edit user profile
  */
 
+import Link from 'next/link';
 import { useState } from 'react';
 import Head from 'next/head';
 import { useWallet } from '@/context/WalletContext';
@@ -75,12 +76,12 @@ export default function ProfilePage() {
                     </div>
                     <h3 className="text-lg font-semibold text-blue-900 mb-2">No Profile Found</h3>
                     <p className="text-blue-800 text-sm mb-4">You need to register a profile first.</p>
-                    <a
+                    <Link
                       href="/profile/create"
                       className="inline-block px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
                     >
                       Create Profile
-                    </a>
+                    </Link>
                   </div>
                 </div>
               ) : (

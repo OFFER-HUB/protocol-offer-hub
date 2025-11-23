@@ -57,30 +57,36 @@ export default function Home() {
           <div className="mb-16 max-w-5xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Reputation Score Card */}
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="bg-white rounded-lg shadow-md p-6 flex flex-col">
                 <h3 className="text-sm font-medium text-gray-500 mb-2">Your Reputation</h3>
-                <ReputationDisplay account={publicKey} size="md" showLabel={false} />
+                <div className="flex-1 flex items-center">
+                  <ReputationDisplay account={publicKey} size="md" showLabel={false} />
+                </div>
               </div>
 
               {/* Stats Cards */}
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="bg-white rounded-lg shadow-md p-6 flex flex-col">
                 <h3 className="text-sm font-medium text-gray-500 mb-2">Claims Received</h3>
-                <div className="text-4xl font-bold text-primary-600 mb-1">
-                  {receivedClaimsCount}
+                <div className="flex-1 flex flex-col justify-center">
+                  <div className="text-4xl font-bold text-primary-600 mb-1">
+                    {receivedClaimsCount}
+                  </div>
+                  <Link href="/my-claims" className="text-sm text-primary-600 hover:text-primary-700">
+                    View all →
+                  </Link>
                 </div>
-                <Link href="/my-claims" className="text-sm text-primary-600 hover:text-primary-700">
-                  View all →
-                </Link>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="bg-white rounded-lg shadow-md p-6 flex flex-col">
                 <h3 className="text-sm font-medium text-gray-500 mb-2">Claims Issued</h3>
-                <div className="text-4xl font-bold text-primary-600 mb-1">
-                  {issuedClaimsCount}
+                <div className="flex-1 flex flex-col justify-center">
+                  <div className="text-4xl font-bold text-primary-600 mb-1">
+                    {issuedClaimsCount}
+                  </div>
+                  <Link href="/issued-claims" className="text-sm text-primary-600 hover:text-primary-700">
+                    View all →
+                  </Link>
                 </div>
-                <Link href="/issued-claims" className="text-sm text-primary-600 hover:text-primary-700">
-                  View all →
-                </Link>
               </div>
             </div>
           </div>
@@ -140,7 +146,7 @@ export default function Home() {
                   <Link href="/claims/new">
                     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer">
                       <h3 className="font-semibold text-gray-900 mb-2">Issue Claim</h3>
-                      <p className="text-sm text-gray-600">Verify someone's work</p>
+                      <p className="text-sm text-gray-600">Verify someone&apos;s work</p>
                     </div>
                   </Link>
                 </>

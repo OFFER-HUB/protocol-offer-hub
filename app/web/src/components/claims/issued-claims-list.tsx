@@ -81,7 +81,7 @@ export function IssuedClaimsList({
             </div>
             <h4 className="text-base font-semibold text-gray-900 mb-1.5">No claims issued yet</h4>
             <p className="text-sm text-gray-600 max-w-sm mx-auto">
-              You haven't issued any claims yet. Your issued claims will appear here once you create them.
+              You haven&apos;t issued any claims yet. Your issued claims will appear here once you create them.
             </p>
           </div>
         ) : (
