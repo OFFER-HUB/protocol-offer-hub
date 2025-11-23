@@ -163,9 +163,20 @@ export function useOfferHubContract(): UseOfferHubContractReturn {
         // Try to extract returnValue from transaction metadata
         try {
           if (txResponse.resultMetaXdr) {
-            const meta = xdr.TransactionMeta.fromXDR(txResponse.resultMetaXdr, 'base64');
-            if (meta.v3 && meta.v3().sorobanMeta && meta.v3().sorobanMeta().returnValue()) {
-              const returnVal = meta.v3().sorobanMeta().returnValue();
+            // TypeScript thinks resultMetaXdr is TransactionMeta, but it might be a string at runtime or vice versa depending on SDK version
+            // We cast to unknown to handle both cases or satisfy the compiler
+            const metaXdr = txResponse.resultMetaXdr as unknown;
+            let meta: xdr.TransactionMeta;
+            
+            if (typeof metaXdr === 'string') {
+               meta = xdr.TransactionMeta.fromXDR(metaXdr, 'base64');
+            } else {
+               // Assume it's already a TransactionMeta object
+               meta = metaXdr as xdr.TransactionMeta;
+            }
+
+            if (meta.v3 && meta.v3().sorobanMeta && meta.v3().sorobanMeta()?.returnValue()) {
+              const returnVal = meta.v3().sorobanMeta()!.returnValue();
               return { txResult, returnValue: returnVal };
             }
           }

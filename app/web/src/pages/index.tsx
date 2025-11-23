@@ -146,7 +146,7 @@ export default function Home() {
                   <Link href="/claims/new">
                     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer">
                       <h3 className="font-semibold text-gray-900 mb-2">Issue Claim</h3>
-                      <p className="text-sm text-gray-600">Verify someone's work</p>
+                      <p className="text-sm text-gray-600">Verify someone&apos;s work</p>
                     </div>
                   </Link>
                 </>
