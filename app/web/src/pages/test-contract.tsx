@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useWallet } from '@/context/WalletContext';
 import { useOfferHubContract } from '@/hooks/use-offer-hub-contract';
 import { WalletButton } from '@/components/WalletButton';
-import { Layout } from '@/components/Layout';
 
 export default function TestContractPage() {
   const { isConnected, publicKey } = useWallet();
@@ -349,8 +348,7 @@ export default function TestContractPage() {
   };
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Contract Integration Test</h1>
         
         {/* Wallet Section */}
@@ -715,6 +713,5 @@ export default function TestContractPage() {
           </div>
         )}
       </div>
-    </Layout>
   );
 }
