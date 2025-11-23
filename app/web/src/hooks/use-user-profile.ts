@@ -25,6 +25,7 @@ export function useUserProfile(): UseUserProfileReturn {
   const fetchProfile = useCallback(async () => {
     if (!publicKey || !isReady) {
       setProfile(null);
+      setIsLoading(false);
       return;
     }
 
@@ -46,12 +47,18 @@ export function useUserProfile(): UseUserProfileReturn {
     fetchProfile();
   }, [fetchProfile]);
 
+  // Check if profile exists and has valid data (not just empty object)
+  const hasValidProfile = profile !== null && 
+    profile.display_name !== '' && 
+    profile.display_name !== undefined &&
+    profile.owner !== '';
+
   return {
     profile,
     isLoading,
     error,
     refresh: fetchProfile,
-    hasProfile: profile !== null,
+    hasProfile: hasValidProfile,
   };
 }
 
