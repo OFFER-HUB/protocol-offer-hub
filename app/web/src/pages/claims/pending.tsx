@@ -1,74 +1,30 @@
 /**
- * Pending Claims page - lists claims pending approval by the current issuer.
- * NOTE: Since the contract doesn't expose claims-by-issuer query, this page uses a mock list
- * filtered by the connected account as issuer. Replace with indexed data when available.
+ * Pending Claims page - redirects to issued-claims since claims are created as Approved
+ * NOTE: Claims are now created directly as Approved, so this page redirects to issued-claims
  */
 
 import Head from 'next/head';
-import { useWallet } from '@/context/WalletContext';
-import { IssuerPendingList } from '@/components/claims/issuer-pending-list';
-import type { Claim, ClaimType } from '@/types/claim-types';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 export default function PendingClaimsPage() {
-  const { publicKey, isConnected } = useWallet();
-  const [claims, setClaims] = useState<Claim[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
-    // MOCK: Replace with real data source (indexer or backend) listing claims issued by current user
-    if (!publicKey) {
-      setClaims([]);
-      return;
-    }
-    const mock: Claim[] = [
-      {
-        id: 101,
-        issuer: publicKey,
-        receiver: 'GB6NVEN5HSUBKMYCE5ZOWSK5K23TBWRUQLZY3KNMXUZ3AQPECS2K4DMT',
-        claimType: 'JobCompleted' as ClaimType,
-        proofHash: '0x' + '1'.repeat(64),
-        approved: false,
-        timestamp: Date.now() - 1000 * 60 * 60,
-      },
-      {
-        id: 102,
-        issuer: publicKey,
-        receiver: 'GDQERENWDSIU6VU35EVI2R4PGBIOJ2CIOPKFEAAOS3M4X7XXM6MT36CK',
-        claimType: 'RepoContribution' as ClaimType,
-        proofHash: '0x' + '2'.repeat(64),
-        approved: false,
-        timestamp: Date.now() - 1000 * 60 * 120,
-      },
-    ];
-    setClaims(mock);
-  }, [publicKey]);
+    // Redirect to issued-claims since claims are created as Approved
+    router.replace('/issued-claims');
+  }, [router]);
 
   return (
     <>
       <Head>
         <title>Pending Claims - Protocol Offer Hub</title>
-        <meta name="description" content="Approve pending claims you have issued" />
+        <meta name="description" content="Redirecting to issued claims" />
       </Head>
       <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
         <div className="container mx-auto px-4 py-16">
-          <div className="max-w-4xl mx-auto space-y-6">
-            <div className="text-center">
-              <h1 className="text-3xl font-bold text-gray-900">Pending Claims</h1>
-              <p className="text-gray-600 mt-2">Approve claims you have issued.</p>
-            </div>
-
-            {!isConnected ? (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-yellow-800">
-                Connect your wallet to view and approve your pending claims.
-              </div>
-            ) : (
-              <IssuerPendingList
-                claims={claims}
-                onApproved={(id) => {
-                  setClaims((prev) => prev.map((c) => (c.id === id ? { ...c, approved: true } : c)));
-                }}
-              />
-            )}
+          <div className="max-w-4xl mx-auto text-center">
+            <p className="text-gray-600">Redirecting to issued claims...</p>
           </div>
         </div>
       </main>

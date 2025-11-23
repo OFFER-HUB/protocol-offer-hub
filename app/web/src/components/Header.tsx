@@ -1,15 +1,19 @@
 /**
- * Header component with navigation
+ * Header component with contextual navigation
  */
 
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { WalletButton } from './WalletButton';
+import { useWallet } from '@/context/WalletContext';
+import { useUserProfile } from '@/hooks/use-user-profile';
 
 export function Header() {
   const router = useRouter();
   const [logoError, setLogoError] = useState(false);
+  const { isConnected } = useWallet();
+  const { hasProfile } = useUserProfile();
 
   const isActive = (path: string) => {
     return router.pathname === path;
@@ -45,7 +49,7 @@ export function Header() {
           </Link>
 
           {/* Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden md:flex items-center space-x-1">
             <Link
               href="/"
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -56,16 +60,60 @@ export function Header() {
             >
               Home
             </Link>
-            <Link
-              href="/profile"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive('/profile')
-                  ? 'text-primary-600 bg-primary-50'
-                  : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
-              }`}
-            >
-              My Profile
-            </Link>
+            
+            {isConnected && (
+              <>
+                {/* Freelancer Section */}
+                {hasProfile && (
+                  <>
+                    <Link
+                      href="/profile"
+                      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                        isActive('/profile')
+                          ? 'text-primary-600 bg-primary-50'
+                          : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      My Profile
+                    </Link>
+                    <Link
+                      href="/my-claims"
+                      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                        isActive('/my-claims')
+                          ? 'text-primary-600 bg-primary-50'
+                          : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      My Claims
+                    </Link>
+                  </>
+                )}
+
+                {/* Client Section */}
+                <Link
+                  href="/claims/new"
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive('/claims/new')
+                      ? 'text-primary-600 bg-primary-50'
+                      : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                  }`}
+                >
+                  Generate Claim
+                </Link>
+                <Link
+                  href="/issued-claims"
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive('/issued-claims')
+                      ? 'text-primary-600 bg-primary-50'
+                      : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                  }`}
+                >
+                  Issued Claims
+                </Link>
+              </>
+            )}
+
+            {/* Common Section */}
             <Link
               href="/explore"
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -75,26 +123,6 @@ export function Header() {
               }`}
             >
               Explore
-            </Link>
-            <Link
-              href="/claims/new"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive('/claims/new')
-                  ? 'text-primary-600 bg-primary-50'
-                  : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
-              }`}
-            >
-              Create Claim
-            </Link>
-            <Link
-              href="/claims/pending"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                isActive('/claims/pending')
-                  ? 'text-primary-600 bg-primary-50'
-                  : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
-              }`}
-            >
-              Pending Claims
             </Link>
           </nav>
 

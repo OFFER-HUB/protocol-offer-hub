@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useWallet } from '@/context/WalletContext';
 import { useOfferHubContract } from '@/hooks/use-offer-hub-contract';
 import { WalletButton } from '@/components/WalletButton';
-import { Layout } from '@/components/Layout';
 
 export default function TestContractPage() {
   const { isConnected, publicKey } = useWallet();
@@ -349,8 +348,7 @@ export default function TestContractPage() {
   };
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Contract Integration Test</h1>
         
         {/* Wallet Section */}
@@ -509,10 +507,10 @@ export default function TestContractPage() {
 
                        {/* Preview or Manual Input */}
                        <div className="relative">
-                          <input
-                            type="text"
-                            value={metadataUri}
-                            onChange={(e) => setMetadataUri(e.target.value)}
+                  <input
+                    type="text"
+                    value={metadataUri}
+                    onChange={(e) => setMetadataUri(e.target.value)}
                             className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 font-mono text-xs text-gray-500 bg-gray-50"
                             placeholder="ipfs://..."
                             readOnly
@@ -715,6 +713,5 @@ export default function TestContractPage() {
           </div>
         )}
       </div>
-    </Layout>
   );
 }

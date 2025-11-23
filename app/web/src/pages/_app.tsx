@@ -3,10 +3,12 @@ import type { AppProps } from 'next/app';
 import { WalletProvider } from '@/context/WalletContext';
 import { CONTRACT_CONFIG } from '@/config/contract';
 import { Layout } from '@/components/Layout';
+import { ProfileConnectionGuard } from '@/components/profile-connection-guard';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <WalletProvider rpcUrl={CONTRACT_CONFIG.rpcUrl}>
+    <WalletProvider>
+      <ProfileConnectionGuard />
       <Layout>
         <Component {...pageProps} />
       </Layout>
