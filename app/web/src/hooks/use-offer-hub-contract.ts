@@ -31,12 +31,19 @@ interface UseOfferHubContractReturn {
   getTotalClaims: () => Promise<number>;
 }
 
+// Mock issuer address for MVP demo (when wallet not connected)
+const MOCK_ISSUER_ADDRESS = 'GBMTZAVSCGUS4EJG72AMNYHRCRS3INCSDOPAICTX3RD5REOV657N7UPE';
+
 export function useOfferHubContract(): UseOfferHubContractReturn {
-  const { isConnected, publicKey } = useWallet();
+  const { publicKey } = useWallet();
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [contract, setContract] = useState<Contract | null>(null);
   const [rpc, setRpc] = useState<sorobanRpc.Server | null>(null);
+  
+  // For write operations, MUST use connected wallet (cannot use mock)
+  // For read operations, can use mock address for simulation
+  const issuerAddress = publicKey || MOCK_ISSUER_ADDRESS;
 
   useEffect(() => {
     try {
@@ -64,10 +71,20 @@ export function useOfferHubContract(): UseOfferHubContractReturn {
     }
 
     if (signAndSubmit) {
-      if (!publicKey) throw new Error('Wallet not connected');
+      // MUST use connected wallet - cannot use mock address for signing
+      if (!publicKey) {
+        throw new Error('Wallet not connected. Please connect your Freighter wallet to sign transactions.');
+      }
       
-      // Get account
-      const account = await rpc.getAccount(publicKey);
+      const signerAddress = publicKey;
+      
+      // Get account - must exist and be funded
+      let account;
+      try {
+        account = await rpc.getAccount(signerAddress);
+      } catch (e) {
+        throw new Error(`Account ${signerAddress} not found or not funded. Please fund the account with Friendbot.`);
+      }
       
       // Get current ledger to set proper timeout
       const latestLedger = await rpc.getLatestLedger();
@@ -92,13 +109,16 @@ export function useOfferHubContract(): UseOfferHubContractReturn {
         throw new Error(`Transaction preparation failed: ${errorMsg}`);
       }
 
-      // Sign with Freighter
+      // Sign with Freighter - must use the same address that built the transaction
       let signedXdr: string;
       try {
         const { signTransaction } = await import('@stellar/freighter-api');
+        
+        // Freighter will sign with the currently connected account
+        // The transaction was built with signerAddress (publicKey), so Freighter must sign with the same account
         signedXdr = await signTransaction(preparedTx.toXDR(), {
           network: CONTRACT_CONFIG.network as any,
-          accountToSign: publicKey,
+          accountToSign: signerAddress, // Use the same address that built the transaction
         });
         
         if (!signedXdr) {
@@ -138,17 +158,27 @@ export function useOfferHubContract(): UseOfferHubContractReturn {
         await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
       }
 
-      // Extract return value if available (using resultMetaXdr as required in SDK v14)
+      // Extract return value if available
       if (txResponse.status === 'SUCCESS') {
-        // Simply return success without parsing complex XDR for now
-        // This avoids version compatibility issues with SDK v14
+        // Try to extract returnValue from transaction metadata
+        try {
+          if (txResponse.resultMetaXdr) {
+            const meta = xdr.TransactionMeta.fromXDR(txResponse.resultMetaXdr, 'base64');
+            if (meta.v3 && meta.v3().sorobanMeta && meta.v3().sorobanMeta().returnValue()) {
+              const returnVal = meta.v3().sorobanMeta().returnValue();
+              return { txResult, returnValue: returnVal };
+            }
+          }
+        } catch (e) {
+          console.warn('Could not extract returnValue from transaction metadata:', e);
+        }
         return { txResult, returnValue: null };
       }
 
       return { txResult, returnValue: null };
     } else {
       // Read-only call (simulated tx)
-      const simSource = publicKey || 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF'; // Null account
+      const simSource = issuerAddress || 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF'; // Null account
       
       let sourceAccount;
       try {
@@ -186,12 +216,10 @@ export function useOfferHubContract(): UseOfferHubContractReturn {
 
       return result; 
     }
-  }, [contract, rpc, publicKey]);
+  }, [contract, rpc, issuerAddress]);
 
   // Write functions
   const registerProfile = useCallback(async (params: Omit<RegisterProfileParams, 'owner'>) => {
-    if (!publicKey) throw new Error('Wallet not connected');
-    
     try {
       // Build linked accounts as ScVal maps (structs in Soroban are represented as maps)
       // CRITICAL: Keys in ScMap MUST be sorted! ('handle' comes before 'platform')
@@ -211,7 +239,7 @@ export function useOfferHubContract(): UseOfferHubContractReturn {
 
       // Build arguments array
       const args: xdr.ScVal[] = [
-        xdr.ScVal.scvAddress(StellarAddress.fromString(publicKey).toScAddress()),
+        xdr.ScVal.scvAddress(StellarAddress.fromString(issuerAddress).toScAddress()),
         xdr.ScVal.scvString(params.metadata_uri),
         xdr.ScVal.scvString(params.display_name),
         params.country_code ? xdr.ScVal.scvSymbol(params.country_code) : xdr.ScVal.scvVoid(),
@@ -224,11 +252,9 @@ export function useOfferHubContract(): UseOfferHubContractReturn {
       console.error('Error in registerProfile:', error);
       throw new Error(error?.message || 'Failed to register profile');
     }
-  }, [publicKey, invokeContract]);
+  }, [issuerAddress, invokeContract]);
 
   const updateProfileData = useCallback(async (params: Omit<UpdateProfileParams, 'owner'>) => {
-    if (!publicKey) throw new Error('Wallet not connected');
-
     const linkedAccountsScVal = params.linked_accounts.map(acc => 
       xdr.ScVal.scvMap([
         new xdr.ScMapEntry({
@@ -243,7 +269,7 @@ export function useOfferHubContract(): UseOfferHubContractReturn {
     );
     
     const args = [
-      xdr.ScVal.scvAddress(StellarAddress.fromString(publicKey).toScAddress()),
+      xdr.ScVal.scvAddress(StellarAddress.fromString(issuerAddress).toScAddress()),
       xdr.ScVal.scvString(params.display_name),
       xdr.ScVal.scvString(params.metadata_uri),
       params.country_code ? xdr.ScVal.scvSymbol(params.country_code) : xdr.ScVal.scvVoid(),
@@ -252,16 +278,14 @@ export function useOfferHubContract(): UseOfferHubContractReturn {
     ];
     
     await invokeContract('update_profile_data', args);
-  }, [publicKey, invokeContract]);
+  }, [issuerAddress, invokeContract]);
 
   const addClaim = useCallback(async (params: Omit<AddClaimParams, 'issuer'>): Promise<number> => {
-    if (!publicKey) throw new Error('Wallet not connected');
-    
     // Convert Uint8Array to Buffer if needed
     const proofHashBuffer = Buffer.from(params.proof_hash);
     
     const args = [
-      xdr.ScVal.scvAddress(StellarAddress.fromString(publicKey).toScAddress()),
+      xdr.ScVal.scvAddress(StellarAddress.fromString(issuerAddress).toScAddress()),
       xdr.ScVal.scvAddress(StellarAddress.fromString(params.receiver).toScAddress()),
       xdr.ScVal.scvString(params.claim_type),
       xdr.ScVal.scvBytes(proofHashBuffer),
@@ -279,7 +303,7 @@ export function useOfferHubContract(): UseOfferHubContractReturn {
     
     // Fallback: try to get from transaction result
     return 0;
-  }, [publicKey, invokeContract]);
+  }, [issuerAddress, invokeContract]);
 
   // Read functions
   const getProfile = useCallback(async (account: string): Promise<Profile | null> => {
@@ -367,7 +391,7 @@ export function useOfferHubContract(): UseOfferHubContractReturn {
 function scValToNumber(val: xdr.ScVal): number {
   switch (val.switch()) {
     case xdr.ScValType.scvU64():
-      return Number(val.u64().toString());
+    return Number(val.u64().toString());
     case xdr.ScValType.scvI64():
       return Number(val.i64().toString());
     case xdr.ScValType.scvU32():
@@ -379,7 +403,7 @@ function scValToNumber(val: xdr.ScVal): number {
     case xdr.ScValType.scvI128():
       return Number(val.i128().lo().toString());
     default:
-      return 0;
+  return 0;
   }
 }
 

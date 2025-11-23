@@ -89,7 +89,7 @@ fn test_register_multiple_profiles() {
     let metadata_alice = String::from_str(&e, "ipfs://Alice");
     let metadata_bob = String::from_str(&e, "ipfs://Bob");
     let metadata_charlie = String::from_str(&e, "ipfs://Charlie");
-    
+
     let display_name = String::from_str(&e, "User");
     let country_code: Option<Symbol> = None;
     let email_hash: Option<BytesN<32>> = None;

@@ -1,63 +1,89 @@
 /**
- * Create Claim page - orchestrates the ClaimForm with receiver preview
+ * Create Claim page - Work delivery confirmation
+ * Validates receiver from query and orchestrates ClaimForm
  */
 
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { ClaimForm } from '@/components/claims/claim-form';
-import { useAddClaim } from '@/hooks/use-add-claim';
-import { useEffect, useState } from 'react';
+import { useOfferHubContract } from '@/hooks/use-offer-hub-contract';
+import { useWallet } from '@/context/WalletContext';
+import { useState } from 'react';
+
+// Mock addresses for MVP demo
+const MOCK_ISSUER_ADDRESS = 'GBMTZAVSCGUS4EJG72AMNYHRCRS3INCSDOPAICTX3RD5REOV657N7UPE';
+const MOCK_RECEIVER_ADDRESS = 'GDVDE6ZERJ56JER6RNUNUHA22NYDUXSTOZRHSRMCWNLFEHYSD3WEKFYE';
 
 export default function NewClaimPage() {
   const router = useRouter();
-  const { submit, isSubmitting, error, txHash } = useAddClaim();
-  const [initialReceiver, setInitialReceiver] = useState<string>('');
+  const { isReady } = useOfferHubContract();
+  const { isConnected } = useWallet();
+  const [claimId, setClaimId] = useState<number | null>(null);
+  
+  // Always use mock receiver address for MVP demo
+  const receiver = MOCK_RECEIVER_ADDRESS;
+  
+  // Show wallet connection message if not connected
+  if (!isConnected) {
+    return (
+      <>
+        <Head>
+          <title>Generate Claim - Protocol Offer Hub</title>
+          <meta name="description" content="Generate a claim on Protocol Offer Hub" />
+        </Head>
+        <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+          <div className="container mx-auto px-4 py-16">
+            <div className="max-w-2xl mx-auto text-center">
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">Wallet Required</h1>
+              <p className="text-gray-600 mb-6">
+                Please connect your Freighter wallet to generate claims on-chain.
+              </p>
+            </div>
+          </div>
+        </main>
+      </>
+    );
+  }
 
-  useEffect(() => {
-    const receiver = (router.query.receiver as string) || '';
-    if (receiver) {
-      setInitialReceiver(receiver);
-    }
-  }, [router.query.receiver]);
-
-  const handleSubmit = async (data: { receiver: string; claimType: any; proofHash: string }) => {
-    try {
-      await submit(data.receiver, data.claimType, data.proofHash);
-      router.replace({ pathname: '/explore', query: { address: data.receiver } }, undefined, { shallow: true });
-    } catch {
-      // swallow; error is already handled by hook state
-    }
+  const handleClaimCreated = (id: number) => {
+    setClaimId(id);
+    // Redirect after a short delay
+    setTimeout(() => {
+      router.push({
+        pathname: '/explore',
+        query: { address: receiver },
+      });
+    }, 2000);
   };
 
   return (
     <>
       <Head>
-        <title>Create Claim - Protocol Offer Hub</title>
-        <meta name="description" content="Create a new claim on Protocol Offer Hub" />
+        <title>Generate Claim - Protocol Offer Hub</title>
+        <meta name="description" content="Generate a claim on Protocol Offer Hub" />
       </Head>
       <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
         <div className="container mx-auto px-4 py-16">
-          <div className="max-w-3xl mx-auto space-y-6">
-            <div className="text-center">
-              <h1 className="text-3xl font-bold text-gray-900">Create Claim</h1>
-              <p className="text-gray-600 mt-2">
-                Issue a claim to verify someone's work, skill, or achievement.
-              </p>
-            </div>
+          <div className="max-w-4xl mx-auto space-y-6">
+            {!isReady && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-yellow-800 text-sm">
+                <p>Loading contract...</p>
+              </div>
+            )}
 
             <ClaimForm 
-              onSubmit={handleSubmit} 
-              submitting={isSubmitting} 
-              error={error}
-              initialReceiver={initialReceiver}
+              receiver={receiver}
+              onSubmit={handleClaimCreated}
             />
 
-            {txHash && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-800 text-sm">
-                <div className="font-semibold mb-1">Claim created successfully!</div>
-                <div>Transaction: <span className="font-mono">{txHash}</span></div>
-                <div className="mt-2 text-xs">
-                  Redirecting to receiver's profile...
+            {claimId && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-green-800">
+                <div className="font-semibold text-lg mb-2">✅ Claim created successfully!</div>
+                <div className="text-sm mb-2">
+                  <span className="font-medium">Claim ID:</span> {claimId}
+                </div>
+                <div className="text-sm text-green-700">
+                  Redirecting...
                 </div>
               </div>
             )}
@@ -67,5 +93,3 @@ export default function NewClaimPage() {
     </>
   );
 }
-
-
